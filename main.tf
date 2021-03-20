@@ -1,29 +1,59 @@
-locals {
-  resource_group = "eSzop"
-  location = "West Europe"
+module "offers_db" {
+  source = "./modules/sql-server-db"
+
+  resource_group  = var.resource_group
+  location        = var.location
+  server_name     = "eszop-offers-sqlserver"
+  db_name         = "eszop"
+  sql_sa_login    = var.sql_sa_login
+  sql_sa_password = var.sql_sa_password
+  allowed_ip      = var.allowed_ip
 }
 
-resource "azurerm_sql_server" "sql_server" {
-  name                         = "eszop-sqlserver"
-  resource_group_name          = local.resource_group
-  location                     = local.location
-  administrator_login          = var.sql_sa_login
-  administrator_login_password = var.sql_sa_password
-  version = "12.0"
+module "identity_db" {
+  source = "./modules/sql-server-db"
 
-  tags = {
-    environment = "dev"
-  }
+  resource_group  = var.resource_group
+  location        = var.location
+  server_name     = "eszop-identity-sqlserver"
+  db_name         = "eszop"
+  sql_sa_login    = var.sql_sa_login
+  sql_sa_password = var.sql_sa_password
+  allowed_ip      = var.allowed_ip
 }
 
-resource "azurerm_sql_database" "sql_carts_db" {
-  name                = "eszopcartsdb"
-  resource_group_name = local.resource_group
-  location            = local.location
-  server_name         = azurerm_sql_server.sql_server.name
-  edition = "Basic"
-  
-  tags = {
-    environment = "dev"
-  }
+module "carts_db" {
+  source = "./modules/sql-server-db"
+
+  resource_group  = var.resource_group
+  location        = var.location
+  server_name     = "eszop-carts-sqlserver"
+  db_name         = "eszop"
+  sql_sa_login    = var.sql_sa_login
+  sql_sa_password = var.sql_sa_password
+  allowed_ip      = var.allowed_ip
+}
+
+module "orders_db" {
+  source = "./modules/sql-server-db"
+
+  resource_group  = var.resource_group
+  location        = var.location
+  server_name     = "eszop-orders-sqlserver"
+  db_name         = "eszop"
+  sql_sa_login    = var.sql_sa_login
+  sql_sa_password = var.sql_sa_password
+  allowed_ip      = var.allowed_ip
+}
+
+module "notification_db" {
+  source = "./modules/sql-server-db"
+
+  resource_group  = var.resource_group
+  location        = var.location
+  server_name     = "eszop-notification-sqlserver"
+  db_name         = "eszop"
+  sql_sa_login    = var.sql_sa_login
+  sql_sa_password = var.sql_sa_password
+  allowed_ip      = var.allowed_ip
 }
