@@ -2,6 +2,10 @@ variable "resource_group" {
   type = string
 }
 
+variable "environment" {
+  type = string
+}
+
 variable "service_bus_name" {
   type = string
 }

@@ -1,3 +1,20 @@
+locals {
+  storage_account_name = "eszopstorage"
+}
+
+# ---  Storage account  --------------------------------------------------------
+
+data "azurerm_storage_account" "storage_account" {
+  name                = local.storage_account_name
+  resource_group_name = var.resource_group
+}
+
+resource "azurerm_storage_container" "storage_account_container" {
+  name                  = "eszop-${var.environment}-storage-container"
+  storage_account_name  = local.storage_account_name
+  container_access_type = "blob"
+}
+
 # ---  Databases  --------------------------------------------------------------
 
 module "offers_db" {
@@ -5,7 +22,7 @@ module "offers_db" {
 
   resource_group  = var.resource_group
   location        = var.location
-  server_name     = "eszop-offers-sqlserver"
+  server_name     = "eszop-${var.environment}-offers-sqlserver"
   db_name         = "eszop"
   sql_sa_login    = var.sql_sa_login
   sql_sa_password = var.sql_sa_password
@@ -17,7 +34,7 @@ module "identity_db" {
 
   resource_group  = var.resource_group
   location        = var.location
-  server_name     = "eszop-identity-sqlserver"
+  server_name     = "eszop-${var.environment}-identity-sqlserver"
   db_name         = "eszop"
   sql_sa_login    = var.sql_sa_login
   sql_sa_password = var.sql_sa_password
@@ -29,7 +46,7 @@ module "carts_db" {
 
   resource_group  = var.resource_group
   location        = var.location
-  server_name     = "eszop-carts-sqlserver"
+  server_name     = "eszop-${var.environment}-carts-sqlserver"
   db_name         = "eszop"
   sql_sa_login    = var.sql_sa_login
   sql_sa_password = var.sql_sa_password
@@ -41,7 +58,7 @@ module "orders_db" {
 
   resource_group  = var.resource_group
   location        = var.location
-  server_name     = "eszop-orders-sqlserver"
+  server_name     = "eszop-${var.environment}-orders-sqlserver"
   db_name         = "eszop"
   sql_sa_login    = var.sql_sa_login
   sql_sa_password = var.sql_sa_password
@@ -53,7 +70,7 @@ module "notification_db" {
 
   resource_group  = var.resource_group
   location        = var.location
-  server_name     = "eszop-notification-sqlserver"
+  server_name     = "eszop-${var.environment}-notification-sqlserver"
   db_name         = "eszop"
   sql_sa_login    = var.sql_sa_login
   sql_sa_password = var.sql_sa_password
@@ -63,14 +80,14 @@ module "notification_db" {
 # ---  SERVICE BUS  ------------------------------------------------------------
 
 resource "azurerm_servicebus_namespace" "service_bus" {
-  name                = "eszop-event-bus"
+  name                = "eszop-${var.environment}-event-bus"
   location            = var.location
   resource_group_name = var.resource_group
   sku                 = "Standard"
 }
 
 resource "azurerm_servicebus_topic" "service_bus_topic" {
-  name                = "eszop-event-bus-topic"
+  name                = "eszop-${var.environment}-event-bus-topic"
   resource_group_name = var.resource_group
   namespace_name      = azurerm_servicebus_namespace.service_bus.name
 
@@ -86,6 +103,7 @@ module "offers_sub" {
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "offers"
+  environment      = var.environment
 }
 
 module "identity_sub" {
@@ -95,6 +113,7 @@ module "identity_sub" {
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "identity"
+  environment      = var.environment
 }
 
 module "carts_sub" {
@@ -104,6 +123,7 @@ module "carts_sub" {
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "carts"
+  environment      = var.environment
 }
 
 module "orders_sub" {
@@ -113,6 +133,7 @@ module "orders_sub" {
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "orders"
+  environment      = var.environment
 }
 
 module "notifications_sub" {
@@ -122,6 +143,7 @@ module "notifications_sub" {
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "notifications"
+  environment      = var.environment
 }
 
 output "service_bus_connection_string" {
