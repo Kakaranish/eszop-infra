@@ -1,5 +1,5 @@
 locals {
-  subscription_name = "eszop-event-bus-${var.service_name}-sub"
+  subscription_name = "eszop-${var.environment}-event-bus-${var.service_name}-sub"
 }
 
 resource "azurerm_servicebus_subscription" "service_bus_sub" {
@@ -7,7 +7,7 @@ resource "azurerm_servicebus_subscription" "service_bus_sub" {
   resource_group_name = var.resource_group
   namespace_name      = var.service_bus_name
   topic_name          = var.topic_name
-  max_delivery_count  = 1
+  max_delivery_count  = 10
 }
 
 # This rule is created to get rid of $DEFAULT filter
