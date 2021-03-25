@@ -2,11 +2,11 @@ variable "resource_group" {
   type = string
 }
 
-variable "environment" {
+variable "service_bus_name" {
   type = string
 }
 
-variable "service_bus_name" {
+variable "environment" {
   type = string
 }
 

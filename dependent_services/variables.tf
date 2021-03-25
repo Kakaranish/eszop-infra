@@ -1,10 +1,10 @@
+variable "subscription_id" {
+  type = string
+}
+
 variable "resource_group" {
   type    = string
   default = "eSzop"
-}
-
-variable "environment" {
-  type = string
 }
 
 variable "location" {
@@ -12,7 +12,7 @@ variable "location" {
   default = "West Europe"
 }
 
-variable "subscription_id" {
+variable "environment" {
   type = string
 }
 
