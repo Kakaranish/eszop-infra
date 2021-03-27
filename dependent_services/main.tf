@@ -1,18 +1,5 @@
 locals {
-  storage_account_name = "eszopstorage"
-}
-
-# ---  Storage account  --------------------------------------------------------
-
-data "azurerm_storage_account" "storage_account" {
-  name                = local.storage_account_name
-  resource_group_name = var.resource_group
-}
-
-resource "azurerm_storage_container" "storage_account_container" {
-  name                  = "eszop-${var.environment}-storage-container"
-  storage_account_name  = local.storage_account_name
-  container_access_type = "blob"
+  resource_group = "eszop-${var.environment}-rg"
 }
 
 # ---  Databases  --------------------------------------------------------------
@@ -20,7 +7,7 @@ resource "azurerm_storage_container" "storage_account_container" {
 module "offers_db" {
   source = "./modules/sql_server"
 
-  resource_group  = var.resource_group
+  resource_group  = local.resource_group
   location        = var.location
   server_name     = "eszop-${var.environment}-offers-sqlserver"
   db_name         = "eszop"
@@ -32,7 +19,7 @@ module "offers_db" {
 module "identity_db" {
   source = "./modules/sql_server"
 
-  resource_group  = var.resource_group
+  resource_group  = local.resource_group
   location        = var.location
   server_name     = "eszop-${var.environment}-identity-sqlserver"
   db_name         = "eszop"
@@ -44,7 +31,7 @@ module "identity_db" {
 module "carts_db" {
   source = "./modules/sql_server"
 
-  resource_group  = var.resource_group
+  resource_group  = local.resource_group
   location        = var.location
   server_name     = "eszop-${var.environment}-carts-sqlserver"
   db_name         = "eszop"
@@ -56,7 +43,7 @@ module "carts_db" {
 module "orders_db" {
   source = "./modules/sql_server"
 
-  resource_group  = var.resource_group
+  resource_group  = local.resource_group
   location        = var.location
   server_name     = "eszop-${var.environment}-orders-sqlserver"
   db_name         = "eszop"
@@ -68,7 +55,7 @@ module "orders_db" {
 module "notification_db" {
   source = "./modules/sql_server"
 
-  resource_group  = var.resource_group
+  resource_group  = local.resource_group
   location        = var.location
   server_name     = "eszop-${var.environment}-notification-sqlserver"
   db_name         = "eszop"
@@ -77,18 +64,18 @@ module "notification_db" {
   allowed_ip      = var.allowed_ip
 }
 
-# ---  SERVICE BUS  ------------------------------------------------------------
+#---  SERVICE BUS  -------------------------------------------------------------
 
 resource "azurerm_servicebus_namespace" "service_bus" {
   name                = "eszop-${var.environment}-event-bus"
   location            = var.location
-  resource_group_name = var.resource_group
+  resource_group_name = local.resource_group
   sku                 = "Standard"
 }
 
 resource "azurerm_servicebus_topic" "service_bus_topic" {
   name                = "eszop-${var.environment}-event-bus-topic"
-  resource_group_name = var.resource_group
+  resource_group_name = local.resource_group
   namespace_name      = azurerm_servicebus_namespace.service_bus.name
 
   enable_partitioning = true
@@ -99,7 +86,7 @@ resource "azurerm_servicebus_topic" "service_bus_topic" {
 module "offers_sub" {
   source = "./modules/service_subscription"
 
-  resource_group   = var.resource_group
+  resource_group   = local.resource_group
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "offers"
@@ -109,7 +96,7 @@ module "offers_sub" {
 module "identity_sub" {
   source = "./modules/service_subscription"
 
-  resource_group   = var.resource_group
+  resource_group   = local.resource_group
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "identity"
@@ -119,7 +106,7 @@ module "identity_sub" {
 module "carts_sub" {
   source = "./modules/service_subscription"
 
-  resource_group   = var.resource_group
+  resource_group   = local.resource_group
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "carts"
@@ -129,7 +116,7 @@ module "carts_sub" {
 module "orders_sub" {
   source = "./modules/service_subscription"
 
-  resource_group   = var.resource_group
+  resource_group   = local.resource_group
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "orders"
@@ -139,7 +126,7 @@ module "orders_sub" {
 module "notifications_sub" {
   source = "./modules/service_subscription"
 
-  resource_group   = var.resource_group
+  resource_group   = local.resource_group
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
   service_name     = "notifications"
