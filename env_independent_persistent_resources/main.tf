@@ -14,6 +14,12 @@ resource "azurerm_storage_account" "storage_account" {
   allow_blob_public_access = true
 }
 
+resource "azurerm_storage_container" "db_backups_storage_account_container" {
+  name                  = "eszop-db-backups"
+  storage_account_name  = azurerm_storage_account.storage_account.name
+  container_access_type = "blob"
+}
+
 resource "azurerm_container_registry" "container_registry" {
   depends_on = [azurerm_resource_group.resource_group]
 
