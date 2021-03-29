@@ -1,67 +1,79 @@
 locals {
-  resource_group = "eszop-${var.environment}-rg"
+  resource_group  = "eszop-${var.environment}"
+  sql_server_name = "eszop-${var.environment}-sqlserver"
 }
 
 # ---  Databases  --------------------------------------------------------------
 
-module "offers_db" {
+module "sql_server" {
   source = "./modules/sql_server"
 
   resource_group  = local.resource_group
   location        = var.location
-  server_name     = "eszop-${var.environment}-offers-sqlserver"
-  db_name         = "eszop"
+  server_name     = local.sql_server_name
   sql_sa_login    = var.sql_sa_login
   sql_sa_password = var.sql_sa_password
   allowed_ip      = var.allowed_ip
+}
+
+module "offers_db" {
+  depends_on = [module.sql_server]
+
+  source = "./modules/sql_db"
+
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "offers"
 }
 
 module "identity_db" {
-  source = "./modules/sql_server"
+  depends_on = [module.sql_server]
 
-  resource_group  = local.resource_group
-  location        = var.location
-  server_name     = "eszop-${var.environment}-identity-sqlserver"
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  source = "./modules/sql_db"
+
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "identity"
 }
 
 module "carts_db" {
-  source = "./modules/sql_server"
+  depends_on = [module.sql_server]
 
-  resource_group  = local.resource_group
-  location        = var.location
-  server_name     = "eszop-${var.environment}-carts-sqlserver"
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  source = "./modules/sql_db"
+
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "carts"
 }
 
 module "orders_db" {
-  source = "./modules/sql_server"
+  depends_on = [module.sql_server]
 
-  resource_group  = local.resource_group
-  location        = var.location
-  server_name     = "eszop-${var.environment}-orders-sqlserver"
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  source = "./modules/sql_db"
+
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "orders"
 }
 
 module "notification_db" {
-  source = "./modules/sql_server"
+  depends_on = [module.sql_server]
 
-  resource_group  = local.resource_group
-  location        = var.location
-  server_name     = "eszop-${var.environment}-notification-sqlserver"
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  source = "./modules/sql_db"
+
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "notification"
 }
 
 #---  SERVICE BUS  -------------------------------------------------------------

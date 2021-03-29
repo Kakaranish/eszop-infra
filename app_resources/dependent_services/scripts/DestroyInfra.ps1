@@ -1,5 +1,6 @@
 param(
   [string] $BackupSuffix,
+  [string] $BackupsContainerUri = "https://eszopstorage.blob.core.windows.net/eszop-db-backups",
   [switch] $Init
 )
 
@@ -21,6 +22,7 @@ else {
     -chdir="$tf_dir" `
     destroy `
     -var="allowed_ip=$my_ip" `
+    -var="backups_container_uri=$BackupsContainerUri" `
     -var="import_suffix=$BackupSuffix" `
     -var-file="$tf_dir\vars\$env:ASPNETCORE_ENVIRONMENT.tfvars"
 }

@@ -25,5 +25,9 @@ variable "sql_sa_password" {
 }
 
 variable "import_suffix" {
-  type      = string
+  type = string
+}
+
+variable "backups_container_uri" {
+  type = string
 }

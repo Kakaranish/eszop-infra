@@ -17,23 +17,12 @@ resource "azurerm_sql_firewall_rule" "firewall_rule" {
   end_ip_address      = var.allowed_ip
 }
 
-# Allow access to Azure services
 resource "azurerm_sql_firewall_rule" "firewall_rule_access_azure_services" {
   depends_on = [azurerm_sql_server.sql_server]
 
-  name                = "InitializerIp"
+  name                = "AccessAzureServices"
   resource_group_name = var.resource_group
   server_name         = var.server_name
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
-}
-
-resource "azurerm_sql_database" "sql_db" {
-  depends_on = [azurerm_sql_server.sql_server]
-
-  name                = var.db_name
-  resource_group_name = var.resource_group
-  location            = var.location
-  server_name         = azurerm_sql_server.sql_server.name
-  edition             = "Basic"
 }

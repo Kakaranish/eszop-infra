@@ -1,9 +1,8 @@
 locals {
   resource_group        = "eszop-${var.environment}"
+  sql_server_name       = "eszop-${var.environment}-sqlserver"
   storage_account_name  = "eszopstorage"
   global_resource_group = "eszop"
-  container_name        = "eszop-${var.environment}-storage-container"
-  backups_container_uri = "https://eszopstorage.blob.core.windows.net/eszop-db-backups"
 }
 
 data "azurerm_storage_account" "storage_account" {
@@ -13,92 +12,103 @@ data "azurerm_storage_account" "storage_account" {
 
 # ---  Databases  --------------------------------------------------------------
 
-module "offers_db" {
-  source = "./modules/imported_sql_server"
-
-  service_name = "offers"
-  environment  = var.environment
+module "sql_server" {
+  source = "./modules/sql_server"
 
   resource_group  = local.resource_group
   location        = var.location
-  db_name         = "eszop"
+  server_name     = local.sql_server_name
   sql_sa_login    = var.sql_sa_login
   sql_sa_password = var.sql_sa_password
   allowed_ip      = var.allowed_ip
+}
 
-  backups_container_uri = local.backups_container_uri
+module "offers_db" {
+  depends_on = [module.sql_server]
+
+  source = "./modules/imported_sql_db"
+
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "offers"
+
+  sql_sa_login          = var.sql_sa_login
+  sql_sa_password       = var.sql_sa_password
+  backups_container_uri = var.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
 
 module "identity_db" {
-  source = "./modules/imported_sql_server"
+  depends_on = [module.sql_server]
 
-  service_name = "identity"
-  environment  = var.environment
+  source = "./modules/imported_sql_db"
 
-  resource_group  = local.resource_group
-  location        = var.location
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "identity"
 
-  backups_container_uri = local.backups_container_uri
+  sql_sa_login          = var.sql_sa_login
+  sql_sa_password       = var.sql_sa_password
+  backups_container_uri = var.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
 
 module "carts_db" {
-  source = "./modules/imported_sql_server"
+  depends_on = [module.sql_server]
 
-  service_name = "carts"
-  environment  = var.environment
+  source = "./modules/imported_sql_db"
 
-  resource_group  = local.resource_group
-  location        = var.location
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "carts"
 
-  backups_container_uri = local.backups_container_uri
+  sql_sa_login          = var.sql_sa_login
+  sql_sa_password       = var.sql_sa_password
+  backups_container_uri = var.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
 
 module "orders_db" {
-  source = "./modules/imported_sql_server"
+  depends_on = [module.sql_server]
 
-  service_name = "orders"
-  environment  = var.environment
+  source = "./modules/imported_sql_db"
 
-  resource_group  = local.resource_group
-  location        = var.location
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "orders"
 
-  backups_container_uri = local.backups_container_uri
+  sql_sa_login          = var.sql_sa_login
+  sql_sa_password       = var.sql_sa_password
+  backups_container_uri = var.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
 
 module "notification_db" {
-  source = "./modules/imported_sql_server"
+  depends_on = [module.sql_server]
 
-  service_name = "notification"
-  environment  = var.environment
+  source = "./modules/imported_sql_db"
 
-  resource_group  = local.resource_group
-  location        = var.location
-  db_name         = "eszop"
-  sql_sa_login    = var.sql_sa_login
-  sql_sa_password = var.sql_sa_password
-  allowed_ip      = var.allowed_ip
+  resource_group = local.resource_group
+  location       = var.location
+  environment    = var.environment
+  server_name    = local.sql_server_name
+  service_name   = "notification"
 
-  backups_container_uri = local.backups_container_uri
+  sql_sa_login          = var.sql_sa_login
+  sql_sa_password       = var.sql_sa_password
+  backups_container_uri = var.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }

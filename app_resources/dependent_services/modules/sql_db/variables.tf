@@ -6,19 +6,14 @@ variable "location" {
   type = string
 }
 
-variable "sql_sa_login" {
+variable "environment" {
   type = string
-}
-
-variable "sql_sa_password" {
-  type      = string
-  sensitive = true
 }
 
 variable "server_name" {
   type = string
 }
 
-variable "allowed_ip" {
+variable "service_name" {
   type = string
 }
