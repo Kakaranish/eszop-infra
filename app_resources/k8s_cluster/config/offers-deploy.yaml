@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: offers
+spec:
+  selector:
+    matchLabels:
+      app: offers
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: offers
+    spec:
+      containers:
+        - name: offers
+          image: eszopregistry.azurecr.io/eszop-offers-api:latest
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: ASPNETCORE_URLS
+              value: http://+
+            - name: ESZOP_LOGS_DIR
+              value: /logs
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 80
+              name: api
+            - containerPort: 8080
+              name: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eszop-offers-api
+spec:
+  selector:
+    app: offers
+  ports:
+    - port: 5000
+      targetPort: 80
+      name: api
+    - port: 5001
+      targetPort: 8080
+      name: grpc

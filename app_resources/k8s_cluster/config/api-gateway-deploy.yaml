@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigateway
+spec:
+  selector:
+    matchLabels:
+      app: apigateway
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: apigateway
+    spec:
+      containers:
+        - name: apigateway
+          image: eszopregistry.azurecr.io/eszop-api-gateway:latest
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: ASPNETCORE_URLS
+              value: http://+
+            - name: ESZOP_LOGS_DIR
+              value: /logs
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eszop-api-gateway
+spec:
+  selector:
+    app: apigateway
+  ports:
+    - port: 10000
+      targetPort: 80
