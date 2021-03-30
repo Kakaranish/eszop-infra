@@ -22,6 +22,11 @@ spec:
               value: http://+
             - name: ESZOP_LOGS_DIR
               value: /logs
+            - name: ESZOP_AZURE_EVENTBUS_CONN_STR
+              valueFrom:
+                configMapKeyRef:
+                  name: eszop-config
+                  key: event_bus_conn_str
           resources:
             limits:
               memory: "256Mi"
@@ -40,9 +45,9 @@ spec:
   selector:
     app: offers
   ports:
-    - port: 5000
+    - port: 80
       targetPort: 80
       name: api
-    - port: 5001
+    - port: 8080
       targetPort: 8080
       name: grpc
