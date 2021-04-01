@@ -11,6 +11,6 @@ resource "azurerm_sql_database" "sql_db" {
     administrator_login_password = var.sql_sa_password
     storage_key_type             = "StorageAccessKey"
     storage_key                  = var.storage_key
-    storage_uri                  = "${var.backups_container_uri}/eszop-${var.environment}-${var.service_name}-sqlserver-backup-${var.import_suffix}.bacpac"
+    storage_uri                  = "${var.backups_container_uri}/eszop-${var.environment}-${var.service_name}-db-backup-${var.import_suffix}.bacpac"
   }
 }

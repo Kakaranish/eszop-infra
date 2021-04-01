@@ -135,13 +135,13 @@ module "orders_sub" {
   environment      = var.environment
 }
 
-module "notifications_sub" {
+module "notification_sub" {
   source = "./modules/service_subscription"
 
   resource_group   = local.resource_group
   topic_name       = azurerm_servicebus_topic.service_bus_topic.name
   service_bus_name = azurerm_servicebus_namespace.service_bus.name
-  service_name     = "notifications"
+  service_name     = "notification"
   environment      = var.environment
 }
 
