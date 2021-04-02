@@ -32,7 +32,7 @@ function ToBase64 {
     Write-Output "$encodedText"
 }
 
-$secrets_path = "$PSScriptRoot\secrets.yaml"
+$secrets_path = "$PSScriptRoot\..\config\secrets.yaml"
 $secrets_yaml = Get-Content -Path $secrets_path | ConvertFrom-Yaml
 
 if(-not($secrets_yaml.data)) {
