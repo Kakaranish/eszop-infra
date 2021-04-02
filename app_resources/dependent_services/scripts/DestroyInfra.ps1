@@ -1,7 +1,6 @@
 param(
-  [string] $BackupSuffix,
   [string] $BackupsContainerUri = "https://eszopstorage.blob.core.windows.net/eszop-db-backups",
-  [switch] $Init
+  [switch] $WithImport
 )
 
 Import-Module $PSScriptRoot\..\..\..\scripts\Resolve-EnvPrefix.psm1 -Force
@@ -17,7 +16,7 @@ if(-not($env_prefix)) {
 
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
-if (-not($BackupSuffix)) {
+if (-not($WithImport.IsPresent)) {
   Get-ChildItem -Path "$PSScriptRoot\..\templates\basic" | Copy-Item -Destination "$PSScriptRoot\.."
 
   terraform.exe `
@@ -28,6 +27,8 @@ if (-not($BackupSuffix)) {
 }
 else {
   Get-ChildItem -Path "$PSScriptRoot\..\templates\with_import" | Copy-Item -Destination "$PSScriptRoot\.."
+
+  $BackupSuffix = Get-Content ".cache"
 
   terraform.exe `
     -chdir="$tf_dir" `

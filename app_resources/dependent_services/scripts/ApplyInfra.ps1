@@ -46,3 +46,6 @@ else {
     -var="import_suffix=$BackupSuffix" `
     -var-file="$tf_dir\vars\$env_prefix.tfvars"
 }
+
+New-Item -ItemType File -Name ".cache" -Force | Out-Null
+Set-Content ".cache" $BackupSuffix
