@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders
+spec:
+  selector:
+    matchLabels:
+      app: orders
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: orders
+    spec:
+      containers:
+        - name: orders
+          image: eszopregistry.azurecr.io/eszop-orders-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: ASPNETCORE_URLS
+              value: http://+
+            - name: ESZOP_LOGS_DIR
+              value: /logs
+            - name: ESZOP_SQLSERVER_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ESZOP_SQLSERVER_CONN_STR_ORDERS
+            - name: ESZOP_AZURE_EVENTBUS_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ESZOP_AZURE_EVENTBUS_CONN_STR
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 80
+              name: api
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: orders-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: orders
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eszop-orders-api
+spec:
+  selector:
+    app: orders
+  ports:
+    - port: 80
+      targetPort: 80
+      name: api

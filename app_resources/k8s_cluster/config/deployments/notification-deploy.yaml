@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification
+spec:
+  selector:
+    matchLabels:
+      app: notification
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+        - name: notification
+          image: eszopregistry.azurecr.io/eszop-notification-service:latest
+          imagePullPolicy: Always
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: ASPNETCORE_URLS
+              value: http://+
+            - name: ESZOP_LOGS_DIR
+              value: /logs
+            - name: ESZOP_SQLSERVER_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ESZOP_SQLSERVER_CONN_STR_NOTIFICATION
+            - name: ESZOP_AZURE_EVENTBUS_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ESZOP_AZURE_EVENTBUS_CONN_STR
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 80
+              name: api
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: notification-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: notification
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eszop-notification-api
+spec:
+  selector:
+    app: notification
+  ports:
+    - port: 80
+      targetPort: 80
+      name: api

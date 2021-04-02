@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: offers
+spec:
+  selector:
+    matchLabels:
+      app: offers
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: offers
+    spec:
+      containers:
+        - name: offers
+          image: eszopregistry.azurecr.io/eszop-offers-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: ASPNETCORE_URLS
+              value: http://+
+            - name: ESZOP_LOGS_DIR
+              value: /logs
+            - name: ESZOP_SQLSERVER_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ESZOP_SQLSERVER_CONN_STR_OFFERS
+            - name: ESZOP_AZURE_EVENTBUS_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ESZOP_AZURE_EVENTBUS_CONN_STR
+            - name: ESZOP_AZURE_STORAGE_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ESZOP_AZURE_STORAGE_CONN_STR
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 80
+              name: api
+            - containerPort: 8080
+              name: grpc
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: offers-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: offers
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eszop-offers-api
+spec:
+  selector:
+    app: offers
+  ports:
+    - port: 80
+      targetPort: 80
+      name: api
+    - port: 8080
+      targetPort: 8080
+      name: grpc
