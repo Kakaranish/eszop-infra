@@ -1,3 +1,5 @@
+Import-Module $PSScriptRoot\..\..\..\scripts\Resolve-EnvPrefix.psm1 -Force
+
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
 if (-not($env:ASPNETCORE_ENVIRONMENT)) {

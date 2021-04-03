@@ -27,7 +27,7 @@ $config_dir = Resolve-Path -Path "$PSScriptRoot\..\config"
 kubectl apply -f "$config_dir\config.yaml"
 kubectl apply -f "$config_dir\secrets.yaml"
 
-Sleep -Seconds 10
+Start-Sleep -Seconds 20
 
 kubectl apply -f "$config_dir\cert-issuer.yaml"
 kubectl apply -f "$config_dir\ingress.yaml"
