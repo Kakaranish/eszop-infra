@@ -22,6 +22,11 @@ spec:
               value: http://+
             - name: ESZOP_LOGS_DIR
               value: /logs
+            - name: ESZOP_CLIENT_URI
+              valueFrom:
+                configMapKeyRef:
+                  key: ESZOP_CLIENT_URI
+                  name: eszop-config
           resources:
             limits:
               memory: "256Mi"
@@ -37,5 +42,5 @@ spec:
   selector:
     app: apigateway
   ports:
-    - port: 10000
+    - port: 80
       targetPort: 80

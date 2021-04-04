@@ -26,12 +26,12 @@ spec:
             - name: ESZOP_SQLSERVER_CONN_STR
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: eszop-secrets
                   key: ESZOP_SQLSERVER_CONN_STR_NOTIFICATION
             - name: ESZOP_AZURE_EVENTBUS_CONN_STR
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: eszop-secrets
                   key: ESZOP_AZURE_EVENTBUS_CONN_STR
           resources:
             limits:
@@ -44,7 +44,7 @@ spec:
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: notification-hpa
+  name: notification-service-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -57,7 +57,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: eszop-notification-api
+  name: eszop-notification-service
 spec:
   selector:
     app: notification

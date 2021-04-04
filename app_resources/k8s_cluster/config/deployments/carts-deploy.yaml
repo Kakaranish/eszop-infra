@@ -26,12 +26,12 @@ spec:
             - name: ESZOP_SQLSERVER_CONN_STR
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: eszop-secrets
                   key: ESZOP_SQLSERVER_CONN_STR_CARTS
             - name: ESZOP_AZURE_EVENTBUS_CONN_STR
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: eszop-secrets
                   key: ESZOP_AZURE_EVENTBUS_CONN_STR
           resources:
             limits:

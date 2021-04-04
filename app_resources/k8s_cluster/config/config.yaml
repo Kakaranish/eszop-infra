@@ -1,6 +1,8 @@
 apiVersion: v1
-kind: ConfigMap
 metadata:
   name: eszop-config
+kind: ConfigMap
 data:
-  event_bus_conn_str: ""
+  ESZOP_API_URL: https://ANYTHING/api
+  ESZOP_CLIENT_URI: https://ANYTHING
+
