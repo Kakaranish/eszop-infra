@@ -6,6 +6,7 @@ metadata:
     kubernetes.io/tls-acme: "true"
     ingress.kubernetes.io/secure-backends: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
     cert-manager.io/cluster-issuer: selfsigned-issuer
   name: eszop
   namespace: default
@@ -13,7 +14,11 @@ spec:
   rules:
     - http:
         paths:
-          - backend:
-              serviceName: eszop-api-gateway
-              servicePort: 10000
-            path: /
+        - path: /api/?(.*)
+          backend:
+            serviceName: eszop-api-gateway
+            servicePort: 80
+        - path: /?(.*)
+          backend:
+            serviceName: eszop-frontend
+            servicePort: 80
