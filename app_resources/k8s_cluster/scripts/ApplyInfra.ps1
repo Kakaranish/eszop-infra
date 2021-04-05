@@ -1,5 +1,6 @@
 param(
-  [switch] $Init
+  [switch] $Init,
+  [switch] $AutoApprove
 )
 
 Import-Module $PSScriptRoot\..\..\..\scripts\Resolve-EnvPrefix.psm1 -Force
@@ -19,7 +20,18 @@ if ($Init) {
   terraform.exe -chdir="$tf_dir" init
 }
 
-terraform.exe `
-  -chdir="$tf_dir" `
-  apply `
+$apply_command = @"
+terraform.exe ``
+  -chdir="$tf_dir" ``
+  apply ``
   -var="environment=$env_prefix"
+"@
+
+if ($AutoApprove.IsPresent) {
+  $apply_command = @"
+$apply_command ``
+  -auto-approve 
+"@
+}
+
+Invoke-Expression $apply_command
