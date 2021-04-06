@@ -1,0 +1,7 @@
+apiVersion: v1
+metadata:
+  name: eszop-config
+kind: ConfigMap
+data:
+  ESZOP_API_URL: https://AUTO_GENERATED/api
+  ESZOP_CLIENT_URI: https://AUTO_GENERATED

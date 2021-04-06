@@ -1,8 +1,0 @@
-apiVersion: v1
-metadata:
-  name: eszop-config
-kind: ConfigMap
-data:
-  ESZOP_API_URL: https://ANYTHING/api
-  ESZOP_CLIENT_URI: https://ANYTHING
-

@@ -19,3 +19,9 @@ resource "azurerm_storage_container" "storage_account_container" {
   storage_account_name  = local.storage_account_name
   container_access_type = "blob"
 }
+
+resource "azurerm_storage_container" "vm_images_container" {
+  name                  = "eszop-${var.environment}-vm-images"
+  storage_account_name  = local.storage_account_name
+  container_access_type = "blob"
+}
