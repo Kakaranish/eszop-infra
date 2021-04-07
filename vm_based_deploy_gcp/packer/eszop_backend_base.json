@@ -1,0 +1,47 @@
+{
+    "variables": {
+        "build_suffix": "",
+        "project_id": ""
+    },
+    "builders": [
+        {
+            "type": "googlecompute",
+            "project_id": "{{user `project_id`}}",
+            "source_image": "ubuntu-minimal-2004-focal-v20210325",
+            "disk_size": "10",
+            "disk_type": "pd-ssd",
+            "machine_type": "e2-medium",
+            "communicator": "ssh",
+            "zone": "europe-central2-a",
+            "image_name": "eszop-backend-base-{{timestamp}}",
+            "ssh_username": "root",
+            "image_labels": [
+                {
+                    "build_suffix": "{{user `build_suffix`}}"
+                }
+            ]
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "../build-scripts",
+            "destination": "/scripts"
+        },
+        {
+            "inline": [
+                "chmod +x /scripts/download-services.sh",
+                "chmod +x /scripts/startup.sh",
+                "/scripts/download-services.sh {{user `build_suffix`}}",
+                "apt-get update",
+                "apt-get install -y apt-utils unzip",
+                "wget https://packages.microsoft.com/config/ubuntu/20.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb",
+                "dpkg -i packages-microsoft-prod.deb",
+                "apt-get update",
+                "apt-get install -y apt-transport-https dotnet-sdk-5.0"
+            ],
+            "inline_shebang": "/bin/sh -x",
+            "type": "shell"
+        }
+    ]
+}
