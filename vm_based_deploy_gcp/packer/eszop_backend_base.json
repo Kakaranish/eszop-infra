@@ -31,14 +31,16 @@
         {
             "inline": [
                 "chmod +x /scripts/download-services.sh",
-                "chmod +x /scripts/startup.sh",
+                "chmod +x /scripts/boot.sh",
+                "chmod +x /scripts/start-service.sh",
                 "/scripts/download-services.sh {{user `build_suffix`}}",
                 "apt-get update",
                 "apt-get install -y apt-utils unzip",
                 "wget https://packages.microsoft.com/config/ubuntu/20.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb",
                 "dpkg -i packages-microsoft-prod.deb",
                 "apt-get update",
-                "apt-get install -y apt-transport-https dotnet-sdk-5.0"
+                "apt-get install -y apt-transport-https dotnet-sdk-5.0",
+                "mkdir -p /logs"
             ],
             "inline_shebang": "/bin/sh -x",
             "type": "shell"
