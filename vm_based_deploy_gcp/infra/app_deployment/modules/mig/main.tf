@@ -24,7 +24,8 @@ resource "google_compute_instance_template" "compute_engine_template" {
   }
 }
 
-resource "google_compute_health_check" "healtcheck" {
+resource "google_compute_health_check" "healthcheck" {
+  project = var.project_id
   name = "${var.service_name}-healthcheck"
 
   http_health_check {
@@ -40,7 +41,7 @@ resource "google_compute_region_instance_group_manager" "instance_group" {
   base_instance_name = var.service_name
 
   auto_healing_policies {
-    health_check      = google_compute_health_check.healtcheck.id
+    health_check      = google_compute_health_check.healthcheck.id
     initial_delay_sec = 60
   }
 
@@ -76,5 +77,5 @@ resource "google_compute_region_backend_service" "backend_service" {
     group = google_compute_region_instance_group_manager.instance_group.instance_group
   }
 
-  health_checks = [google_compute_health_check.healtcheck.id]
+  health_checks = [google_compute_health_check.healthcheck.id]
 }
