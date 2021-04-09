@@ -4,7 +4,11 @@ variable "project_id" {
 
 variable "region" {
   type    = string
-  default = "europe-central2-a"
+  default = "europe-central2"
+}
+
+variable "image_name" {
+  type = string
 }
 
 variable "environment" {
@@ -12,5 +16,5 @@ variable "environment" {
 }
 
 variable "environment_prefix" {
-    type = string
+  type = string
 }

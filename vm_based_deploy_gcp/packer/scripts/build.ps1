@@ -1,6 +1,4 @@
-
-$project_id = ""
-$build_suffix = ""
+$project_id = "eszop-309916"
 
 packer build `
     -var "build_suffix=$build_suffix" `
