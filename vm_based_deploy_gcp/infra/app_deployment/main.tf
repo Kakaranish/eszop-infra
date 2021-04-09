@@ -8,7 +8,7 @@ resource "google_service_account" "service_account" {
   display_name = "eszop ${var.environment_prefix} env SA"
 }
 
-module "offers-mig" {
+module "offers_mig" {
   source = "./modules/mig"
 
   project_id            = var.project_id

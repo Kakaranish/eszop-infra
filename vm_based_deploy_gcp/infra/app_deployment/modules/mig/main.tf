@@ -1,3 +1,7 @@
+locals {
+  dns_zone = "eszop-dns-zone"
+}
+
 resource "google_compute_instance_template" "compute_engine_template" {
   project      = var.project_id
   region       = var.region
@@ -26,7 +30,7 @@ resource "google_compute_instance_template" "compute_engine_template" {
 
 resource "google_compute_health_check" "healthcheck" {
   project = var.project_id
-  name = "${var.service_name}-healthcheck"
+  name    = "${var.service_name}-healthcheck"
 
   http_health_check {
     port         = 80
@@ -78,4 +82,29 @@ resource "google_compute_region_backend_service" "backend_service" {
   }
 
   health_checks = [google_compute_health_check.healthcheck.id]
+}
+
+resource "google_compute_forwarding_rule" "forwarding_rule" {
+  name          = "${var.service_name}-fwd-rule"
+  service_label = var.service_name
+  region        = var.region
+  project       = var.project_id
+
+  load_balancing_scheme = "INTERNAL"
+  backend_service       = google_compute_region_backend_service.backend_service.id
+  all_ports             = true
+  allow_global_access   = true
+}
+
+data "google_dns_managed_zone" "dns_zone" {
+  name = local.dns_zone
+}
+
+resource "google_dns_record_set" "a" {
+  name         = "${var.service_name}.${data.google_dns_managed_zone.dns_zone.dns_name}"
+  managed_zone = data.google_dns_managed_zone.dns_zone.name
+  type         = "A"
+  ttl          = 300
+
+  rrdatas = [google_compute_forwarding_rule.forwarding_rule.ip_address]
 }

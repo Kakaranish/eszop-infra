@@ -25,3 +25,16 @@ resource "google_compute_firewall" "firewall" {
 
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22"]
 }
+
+resource "google_dns_managed_zone" "dns_zone" {
+  name        = "eszop-dns-zone"
+  dns_name    = "eszop."
+  description = "eszop dns name"
+  visibility  = "private"
+
+  private_visibility_config {
+    networks {
+      network_url = data.google_compute_network.vpc.id
+    }
+  }
+}
