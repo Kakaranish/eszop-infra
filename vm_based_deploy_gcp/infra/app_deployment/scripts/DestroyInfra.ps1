@@ -11,8 +11,11 @@ if(-not($env_prefix)) {
 
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
+$image_name = Get-Content ".cache"
+
 terraform.exe `
     -chdir="$tf_dir" `
     destroy `
     -var="environment=$env:ASPNETCORE_ENVIRONMENT" `
-    -var="environment_prefix=$env_prefix"
+    -var="environment_prefix=$env_prefix" `
+    -var="image_name=$image_name"
