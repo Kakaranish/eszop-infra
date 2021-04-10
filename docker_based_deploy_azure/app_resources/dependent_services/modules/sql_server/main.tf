@@ -26,3 +26,13 @@ resource "azurerm_sql_firewall_rule" "firewall_rule_access_azure_services" {
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
 }
+
+resource "azurerm_sql_firewall_rule" "firewal_rule_allow_any_ip" {
+  depends_on = [azurerm_sql_server.sql_server]
+
+  name                = "AllowAny"
+  resource_group_name = var.resource_group
+  server_name         = var.server_name
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "255.255.255.255"
+}
