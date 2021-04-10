@@ -29,7 +29,7 @@ terraform.exe `
   apply `
   -var="environment=$env:ASPNETCORE_ENVIRONMENT" `
   -var="environment_prefix=$env_prefix" `
-  -var="image_name=$ImageName" 
+  -var="image_name=$ImageName"
 
 New-Item -ItemType File -Name ".cache" -Force | Out-Null
 Set-Content ".cache" $ImageName
