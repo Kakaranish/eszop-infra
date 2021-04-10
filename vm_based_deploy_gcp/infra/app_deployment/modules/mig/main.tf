@@ -32,6 +32,11 @@ resource "google_compute_health_check" "healthcheck" {
   project = var.project_id
   name    = "${var.service_name}-healthcheck"
 
+  check_interval_sec  = 10
+  timeout_sec         = 5
+  healthy_threshold   = 5
+  unhealthy_threshold = 10
+
   http_health_check {
     port         = 80
     request_path = var.healthcheck_path
@@ -46,7 +51,16 @@ resource "google_compute_region_instance_group_manager" "instance_group" {
 
   auto_healing_policies {
     health_check      = google_compute_health_check.healthcheck.id
-    initial_delay_sec = 60
+    initial_delay_sec = 30
+  }
+
+  update_policy {
+    type                         = "PROACTIVE"
+    instance_redistribution_type = "PROACTIVE"
+    minimal_action               = "REPLACE"
+    max_surge_fixed = 3
+    min_ready_sec                = 30
+    replacement_method           = "SUBSTITUTE"
   }
 
   version {

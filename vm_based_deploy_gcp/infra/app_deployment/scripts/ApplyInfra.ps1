@@ -18,6 +18,8 @@ if (-not($env_prefix)) {
 
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
+Write-Host "[INFO] Running on $env:ASPNETCORE_ENVIRONMENT env" -ForegroundColor Green
+
 if ($Init) {
   terraform.exe -chdir="$tf_dir" init
 }
