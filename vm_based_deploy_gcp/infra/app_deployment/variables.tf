@@ -7,7 +7,11 @@ variable "region" {
   default = "europe-central2"
 }
 
-variable "image_name" {
+variable "backend_image_name" {
+  type = string
+}
+
+variable "frontend_image_name" {
   type = string
 }
 
