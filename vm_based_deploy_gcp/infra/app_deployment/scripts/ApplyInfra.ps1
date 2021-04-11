@@ -25,7 +25,7 @@ if (-not($BackendImageName)) {
   Write-Error "BackendImageName cannot be empty" -ErrorAction Stop
 }
 if (-not($FrontendImageName)) {
-  Write-Error "BackendImageName cannot be empty" -ErrorAction Stop
+  Write-Error "FrontendImageName cannot be empty" -ErrorAction Stop
 }
 
 $tf_dir = Resolve-Path "$PSScriptRoot\.."

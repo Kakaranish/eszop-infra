@@ -12,30 +12,19 @@ resource "google_service_account" "service_account" {
   display_name = "eszop ${var.environment_prefix} env SA"
 }
 
-resource "google_compute_instance" "frontend" {
-  name         = "frontend-vm"
-  machine_type = "e2-medium"
-  zone         = "europe-central2-a"
+module "frontend_mig" {
+  source = "./modules/backend-mig"
 
-  boot_disk {
-    initialize_params {
-      image = "projects/eszop-309916/global/images/${var.frontend_image_name}"
-    }
-  }
-
-  network_interface {
-    network = "default"
-    access_config {}
-  }
+  project_id            = var.project_id
+  region                = var.region
+  image_name            = var.frontend_image_name
+  service_account_email = google_service_account.service_account.email
+  service_name          = "frontend"
 
   metadata = {
+    startup-script         = ". /scripts/boot.sh"
     ASPNETCORE_ENVIRONMENT = var.environment
     ESZOP_API_URL          = "gateway.eszop"
-  }
-
-  service_account {
-    email  = google_service_account.service_account.email
-    scopes = ["cloud-platform"]
   }
 }
 
