@@ -13,7 +13,7 @@
             "machine_type": "e2-medium",
             "communicator": "ssh",
             "zone": "europe-central2-a",
-            "image_name": "eszop-backend-base-{{timestamp}}",
+            "image_name": "eszop-backend-{{timestamp}}",
             "ssh_username": "root",
             "image_labels": [
                 {
