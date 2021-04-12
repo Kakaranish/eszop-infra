@@ -60,3 +60,5 @@ kubectl apply -f "$config_dir\deployments\identity-deploy.yaml"
 kubectl apply -f "$config_dir\deployments\carts-deploy.yaml"
 kubectl apply -f "$config_dir\deployments\orders-deploy.yaml"
 kubectl apply -f "$config_dir\deployments\notification-deploy.yaml"
+
+kubectl apply -f "$config_dir\deployments\frontend-deploy.yaml"
