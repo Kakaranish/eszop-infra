@@ -13,7 +13,7 @@ resource "google_service_account" "service_account" {
 }
 
 module "frontend_mig" {
-  source = "./modules/backend-mig"
+  source = "./modules/mig_with_region_backend"
 
   project_id            = var.project_id
   region                = var.region
@@ -29,7 +29,7 @@ module "frontend_mig" {
 }
 
 module "gateway_mig" {
-  source = "./modules/backend-mig"
+  source = "./modules/mig_with_region_backend"
 
   project_id            = var.project_id
   region                = var.region
@@ -49,7 +49,7 @@ module "gateway_mig" {
 }
 
 module "offers_mig" {
-  source = "./modules/backend-mig"
+  source = "./modules/mig_with_region_backend"
 
   project_id            = var.project_id
   region                = var.region
