@@ -23,6 +23,10 @@ variable "environment_prefix" {
   type = string
 }
 
+variable "domain_name" {
+  type = string
+}
+
 # ---  ENVIRONMENT VARIABLES  --------------------------------------------------
 
 variable "ESZOP_LOGS_DIR" {
@@ -56,9 +60,4 @@ variable "ESZOP_REDIS_CONN_STR" {
   type        = string
   description = "Azure Redis Db connection string"
   sensitive   = true
-}
-
-variable "ESZOP_CLIENT_URI" {
-  type        = string
-  description = "Frontend specific var; for CORS purposes"
 }

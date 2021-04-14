@@ -70,23 +70,80 @@ module "offers_mig" {
   }
 }
 
-module "carts_mig" {
-  source = "./modules/backend-mig"
+# ------------------------------------------------------------------------------
 
-  project_id            = var.project_id
-  region                = var.region
-  image_name            = var.backend_image_name
-  service_account_email = google_service_account.service_account.email
-  service_name          = "carts"
+resource "google_compute_managed_ssl_certificate" "ssl_certificate" {
+  name = "external-lb-cert"
 
-  metadata = {
-    startup-script                = ". /scripts/boot.sh"
-    SERVICE_NAME                  = "carts"
-    SERVICE_DLL                   = "Carts.API.dll"
-    ASPNETCORE_ENVIRONMENT        = var.environment
-    ASPNETCORE_URLS               = "http://+"
-    ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
-    ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
-    ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "carts")
+  managed {
+    domains = ["www.${var.domain_name}"]
   }
+}
+
+data "google_compute_global_address" "external_lb_address" {
+  name = "external-lb-ip"
+}
+
+# --- External https LB --------------------------------------------------------
+
+resource "google_compute_backend_service" "frontend_global_backend" {
+  project               = var.project_id
+  name                  = "frontend-global-backend-service"
+  load_balancing_scheme = "EXTERNAL"
+
+  backend {
+    group                 = module.frontend_mig.instance_group
+    balancing_mode        = "RATE"
+    max_rate_per_instance = 1000
+  }
+
+  health_checks = [module.frontend_mig.healthcheck_id]
+}
+
+resource "google_compute_backend_service" "gateway_global_backend" {
+  project               = var.project_id
+  name                  = "gateway-global-backend-service"
+  load_balancing_scheme = "EXTERNAL"
+
+  backend {
+    group                 = module.gateway_mig.instance_group
+    balancing_mode        = "RATE"
+    max_rate_per_instance = 1000
+  }
+
+  health_checks = [module.gateway_mig.healthcheck_id]
+}
+
+resource "google_compute_url_map" "external_url_map" {
+  name = "external-url-map"
+
+  default_service = google_compute_backend_service.frontend_global_backend.id
+
+  host_rule {
+    hosts        = [var.domain_name]
+    path_matcher = "allpaths"
+  }
+
+  path_matcher {
+    name            = "allpaths"
+    default_service = google_compute_backend_service.frontend_global_backend.id
+
+    path_rule {
+      paths   = ["/api/*"]
+      service = google_compute_backend_service.gateway_global_backend.id
+    }
+  }
+}
+
+resource "google_compute_target_https_proxy" "external_proxy" {
+  name             = "external-proxy"
+  url_map          = google_compute_url_map.external_url_map.id
+  ssl_certificates = [google_compute_managed_ssl_certificate.ssl_certificate.id]
+}
+
+resource "google_compute_global_forwarding_rule" "external_lb_fwd_rule" {
+  name       = "external-lb-fwd-rule"
+  target     = google_compute_target_https_proxy.external_proxy.id
+  port_range = "443"
+  ip_address = data.google_compute_global_address.external_lb_address.address
 }
