@@ -13,7 +13,7 @@ resource "google_service_account" "service_account" {
 }
 
 module "frontend_mig" {
-  source = "./modules/mig_with_region_backend"
+  source = "./modules/mig"
 
   project_id            = var.project_id
   region                = var.region
@@ -29,7 +29,7 @@ module "frontend_mig" {
 }
 
 module "gateway_mig" {
-  source = "./modules/mig_with_region_backend"
+  source = "./modules/mig"
 
   project_id            = var.project_id
   region                = var.region
@@ -49,7 +49,7 @@ module "gateway_mig" {
 }
 
 module "offers_mig" {
-  source = "./modules/mig_with_region_backend"
+  source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
   region                = var.region
@@ -71,7 +71,7 @@ module "offers_mig" {
 }
 
 module "identity_mig" {
-  source = "./modules/mig_with_region_backend"
+  source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
   region                = var.region
@@ -93,7 +93,7 @@ module "identity_mig" {
 }
 
 module "carts_mig" {
-  source = "./modules/mig_with_region_backend"
+  source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
   region                = var.region
@@ -114,7 +114,7 @@ module "carts_mig" {
 }
 
 module "orders_mig" {
-  source = "./modules/mig_with_region_backend"
+  source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
   region                = var.region
@@ -135,7 +135,7 @@ module "orders_mig" {
 }
 
 module "notification_service_mig" {
-  source = "./modules/mig_with_region_backend"
+  source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
   region                = var.region
@@ -232,3 +232,5 @@ resource "google_compute_global_forwarding_rule" "external_lb_fwd_rule" {
   port_range = "443"
   ip_address = data.google_compute_global_address.external_lb_address.address
 }
+
+# --- External http-to-https LB ------------------------------------------------
