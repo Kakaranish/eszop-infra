@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string] $BuildSuffix,
+    [string] $BuildSuffix
 )
 
 $project_id = "eszop-309916"

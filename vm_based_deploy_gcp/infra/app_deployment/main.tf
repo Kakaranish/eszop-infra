@@ -24,7 +24,7 @@ module "frontend_mig" {
   metadata = {
     startup-script         = ". /scripts/boot.sh"
     ASPNETCORE_ENVIRONMENT = var.environment
-    ESZOP_API_URL          = "gateway.eszop"
+    ESZOP_API_URL          = "https://${var.domain_name}/api"
   }
 }
 
@@ -44,7 +44,7 @@ module "gateway_mig" {
     ASPNETCORE_ENVIRONMENT = var.environment
     ASPNETCORE_URLS        = "http://+"
     ESZOP_LOGS_DIR         = var.ESZOP_LOGS_DIR
-    ESZOP_CLIENT_URI       = var.ESZOP_CLIENT_URI
+    ESZOP_CLIENT_URI       = "https://${var.domain_name}"
   }
 }
 
@@ -70,13 +70,98 @@ module "offers_mig" {
   }
 }
 
+module "identity_mig" {
+  source = "./modules/mig_with_region_backend"
+
+  project_id            = var.project_id
+  region                = var.region
+  image_name            = var.backend_image_name
+  service_account_email = google_service_account.service_account.email
+  service_name          = "identity"
+
+  metadata = {
+    startup-script                = ". /scripts/boot.sh"
+    SERVICE_NAME                  = "identity"
+    SERVICE_DLL                   = "Identity.API.dll"
+    ASPNETCORE_ENVIRONMENT        = var.environment
+    ASPNETCORE_URLS               = "http://+"
+    ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
+    ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
+    ESZOP_REDIS_CONN_STR          = var.ESZOP_REDIS_CONN_STR
+    ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "identity")
+  }
+}
+
+module "carts_mig" {
+  source = "./modules/mig_with_region_backend"
+
+  project_id            = var.project_id
+  region                = var.region
+  image_name            = var.backend_image_name
+  service_account_email = google_service_account.service_account.email
+  service_name          = "carts"
+
+  metadata = {
+    startup-script                = ". /scripts/boot.sh"
+    SERVICE_NAME                  = "carts"
+    SERVICE_DLL                   = "Carts.API.dll"
+    ASPNETCORE_ENVIRONMENT        = var.environment
+    ASPNETCORE_URLS               = "http://+"
+    ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
+    ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
+    ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "carts")
+  }
+}
+
+module "orders_mig" {
+  source = "./modules/mig_with_region_backend"
+
+  project_id            = var.project_id
+  region                = var.region
+  image_name            = var.backend_image_name
+  service_account_email = google_service_account.service_account.email
+  service_name          = "orders"
+
+  metadata = {
+    startup-script                = ". /scripts/boot.sh"
+    SERVICE_NAME                  = "orders"
+    SERVICE_DLL                   = "Orders.API.dll"
+    ASPNETCORE_ENVIRONMENT        = var.environment
+    ASPNETCORE_URLS               = "http://+"
+    ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
+    ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
+    ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "orders")
+  }
+}
+
+module "notification_service_mig" {
+  source = "./modules/mig_with_region_backend"
+
+  project_id            = var.project_id
+  region                = var.region
+  image_name            = var.backend_image_name
+  service_account_email = google_service_account.service_account.email
+  service_name          = "notification-service"
+
+  metadata = {
+    startup-script                = ". /scripts/boot.sh"
+    SERVICE_NAME                  = "notification"
+    SERVICE_DLL                   = "NotificationService.dll"
+    ASPNETCORE_ENVIRONMENT        = var.environment
+    ASPNETCORE_URLS               = "http://+"
+    ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
+    ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
+    ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "notification")
+  }
+}
+
 # ------------------------------------------------------------------------------
 
 resource "google_compute_managed_ssl_certificate" "ssl_certificate" {
   name = "external-lb-cert"
 
   managed {
-    domains = ["www.${var.domain_name}"]
+    domains = [var.domain_name]
   }
 }
 
@@ -120,7 +205,7 @@ resource "google_compute_url_map" "external_url_map" {
   default_service = google_compute_backend_service.frontend_global_backend.id
 
   host_rule {
-    hosts        = [var.domain_name]
+    hosts        = ["*"]
     path_matcher = "allpaths"
   }
 
