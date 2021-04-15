@@ -60,6 +60,10 @@ module "external_https_lb" {
   gateway_service_healthcheck_id  = module.gateway_mig.healthcheck_id
 }
 
+module "external_http_to_https_lb" {
+  source = "./modules/external_http_to_https_lb"
+}
+
 module "offers_mig" {
   source = "./modules/mig_with_internal_lb"
 

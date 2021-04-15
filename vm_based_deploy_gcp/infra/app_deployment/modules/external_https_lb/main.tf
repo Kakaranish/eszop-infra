@@ -39,7 +39,7 @@ resource "google_compute_backend_service" "gateway_global_backend" {
 }
 
 resource "google_compute_url_map" "external_url_map" {
-  name = "external-url-map"
+  name = "external-https-lb"
 
   default_service = google_compute_backend_service.frontend_global_backend.id
 
@@ -66,7 +66,7 @@ resource "google_compute_target_https_proxy" "external_proxy" {
 }
 
 resource "google_compute_global_forwarding_rule" "external_lb_fwd_rule" {
-  name       = "external-lb-fwd-rule"
+  name       = "external-https-lb-fwd-rule"
   target     = google_compute_target_https_proxy.external_proxy.id
   port_range = "443"
   ip_address = data.google_compute_global_address.external_lb_address.address
