@@ -6,17 +6,16 @@ resource "google_compute_instance_template" "compute_instance_template" {
   project      = var.project_id
   region       = var.region
   name         = "${var.service_name}-cit"
-  machine_type = "e2-medium"
+  machine_type = var.machine_type
 
   metadata = var.metadata
 
   network_interface {
     network = "default"
-    access_config {}
   }
 
   scheduling {
-    automatic_restart = true
+    automatic_restart   = true
     on_host_maintenance = "MIGRATE"
   }
 

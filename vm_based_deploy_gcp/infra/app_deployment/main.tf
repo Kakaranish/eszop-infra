@@ -20,6 +20,9 @@ module "frontend_mig" {
   image_name            = var.frontend_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "frontend"
+  min_replicas          = var.min_replicas
+  max_replicas          = var.max_replicas
+  machine_type          = var.machine_type
 
   metadata = {
     startup-script         = ". /scripts/boot.sh"
@@ -36,6 +39,9 @@ module "gateway_mig" {
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "gateway"
+  min_replicas          = var.min_replicas
+  max_replicas          = var.max_replicas
+  machine_type          = var.machine_type
 
   metadata = {
     startup-script         = ". /scripts/boot.sh"
@@ -72,6 +78,9 @@ module "offers_mig" {
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "offers"
+  min_replicas          = var.min_replicas
+  max_replicas          = var.max_replicas
+  machine_type          = var.machine_type
 
   metadata = {
     startup-script                = ". /scripts/boot.sh"
@@ -94,6 +103,9 @@ module "identity_mig" {
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "identity"
+  min_replicas          = var.min_replicas
+  max_replicas          = var.max_replicas
+  machine_type          = var.machine_type
 
   metadata = {
     startup-script                = ". /scripts/boot.sh"
@@ -116,6 +128,9 @@ module "carts_mig" {
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "carts"
+  min_replicas          = var.min_replicas
+  max_replicas          = var.max_replicas
+  machine_type          = var.machine_type
 
   metadata = {
     startup-script                = ". /scripts/boot.sh"
@@ -137,6 +152,9 @@ module "orders_mig" {
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "orders"
+  min_replicas          = var.min_replicas
+  max_replicas          = var.max_replicas
+  machine_type          = var.machine_type
 
   metadata = {
     startup-script                = ". /scripts/boot.sh"
@@ -158,6 +176,9 @@ module "notification_service_mig" {
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "notification-service"
+  min_replicas          = var.min_replicas
+  max_replicas          = var.max_replicas
+  machine_type          = var.machine_type
 
   metadata = {
     startup-script                = ". /scripts/boot.sh"

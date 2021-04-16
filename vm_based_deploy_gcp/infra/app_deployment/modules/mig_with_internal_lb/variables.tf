@@ -22,6 +22,11 @@ variable "metadata" {
   type = map(any)
 }
 
+variable "healthcheck_path" {
+  type = string
+  default = "/healthcheck"
+}
+
 variable "min_replicas" {
   type    = number
   default = 1
@@ -32,7 +37,7 @@ variable "max_replicas" {
   default = 3
 }
 
-variable "healthcheck_path" {
-  type = string
-  default = "/healthcheck"
+variable "machine_type" {
+  type    = string
+  default = "e2-medium"
 }

@@ -27,6 +27,21 @@ variable "domain_name" {
   type = string
 }
 
+variable "min_replicas" {
+  type    = number
+  default = 1
+}
+
+variable "max_replicas" {
+  type    = number
+  default = 3
+}
+
+variable "machine_type" {
+  type    = string
+  default = "e2-medium"
+}
+
 # ---  ENVIRONMENT VARIABLES  --------------------------------------------------
 
 variable "ESZOP_LOGS_DIR" {
