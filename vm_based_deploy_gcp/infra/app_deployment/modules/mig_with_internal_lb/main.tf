@@ -41,7 +41,6 @@ resource "google_compute_health_check" "healthcheck" {
   healthy_threshold   = 5
   unhealthy_threshold = 10
 
-
   http_health_check {
     port         = 80
     request_path = var.healthcheck_path
