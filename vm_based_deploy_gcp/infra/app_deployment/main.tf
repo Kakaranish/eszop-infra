@@ -171,14 +171,15 @@ module "orders_mig" {
 module "notification_service_mig" {
   source = "./modules/mig_with_internal_lb"
 
-  project_id            = var.project_id
-  region                = var.region
-  image_name            = var.backend_image_name
-  service_account_email = google_service_account.service_account.email
-  service_name          = "notification-service"
-  min_replicas          = var.min_replicas
-  max_replicas          = var.max_replicas
-  machine_type          = var.machine_type
+  project_id              = var.project_id
+  region                  = var.region
+  image_name              = var.backend_image_name
+  service_account_email   = google_service_account.service_account.email
+  service_name            = "notification-service"
+  min_replicas            = var.min_replicas
+  max_replicas            = var.max_replicas
+  machine_type            = var.machine_type
+  backend_svc_timeout_sec = 86400
 
   metadata = {
     startup-script                = ". /scripts/boot.sh"
@@ -188,6 +189,7 @@ module "notification_service_mig" {
     ASPNETCORE_URLS               = "http://+"
     ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
     ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
+    ESZOP_REDIS_CONN_STR          = var.ESZOP_REDIS_CONN_STR
     ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "notification")
   }
 }
