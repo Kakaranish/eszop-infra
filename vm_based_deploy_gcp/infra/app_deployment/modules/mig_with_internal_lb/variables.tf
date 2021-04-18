@@ -23,7 +23,7 @@ variable "metadata" {
 }
 
 variable "healthcheck_path" {
-  type = string
+  type    = string
   default = "/healthcheck"
 }
 
@@ -40,4 +40,9 @@ variable "max_replicas" {
 variable "machine_type" {
   type    = string
   default = "e2-medium"
+}
+
+variable "backend_svc_timeout_sec" {
+  type    = number
+  default = 30
 }

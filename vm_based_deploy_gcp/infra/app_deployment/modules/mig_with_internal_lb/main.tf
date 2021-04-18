@@ -36,10 +36,10 @@ resource "google_compute_health_check" "healthcheck" {
   project = var.project_id
   name    = "${var.service_name}-healthcheck"
 
-  check_interval_sec  = 10
+  check_interval_sec  = 20
   timeout_sec         = 5
-  healthy_threshold   = 5
-  unhealthy_threshold = 10
+  healthy_threshold   = 2
+  unhealthy_threshold = 3
 
   http_health_check {
     port         = 80
@@ -96,6 +96,7 @@ resource "google_compute_region_backend_service" "backend_service" {
   region                = var.region
   name                  = "${var.service_name}-region-backend-service"
   load_balancing_scheme = "INTERNAL"
+  timeout_sec           = var.backend_svc_timeout_sec
 
   backend {
     group = google_compute_region_instance_group_manager.instance_group.instance_group

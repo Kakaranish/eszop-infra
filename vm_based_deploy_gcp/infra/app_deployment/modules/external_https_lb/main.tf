@@ -14,6 +14,7 @@ resource "google_compute_backend_service" "frontend_global_backend" {
   project               = var.project_id
   name                  = "frontend-global-backend-service"
   load_balancing_scheme = "EXTERNAL"
+  timeout_sec           = var.backend_svc_timeout_sec
 
   backend {
     group                 = var.frontend_service_mig
@@ -28,6 +29,7 @@ resource "google_compute_backend_service" "gateway_global_backend" {
   project               = var.project_id
   name                  = "gateway-global-backend-service"
   load_balancing_scheme = "EXTERNAL"
+  timeout_sec           = var.backend_svc_timeout_sec
 
   backend {
     group                 = var.gateway_service_mig

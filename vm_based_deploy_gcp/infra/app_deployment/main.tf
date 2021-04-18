@@ -64,6 +64,7 @@ module "external_https_lb" {
   frontend_service_healthcheck_id = module.frontend_mig.healthcheck_id
   gateway_service_mig             = module.gateway_mig.instance_group
   gateway_service_healthcheck_id  = module.gateway_mig.healthcheck_id
+  backend_svc_timeout_sec         = 86400
 }
 
 module "external_http_to_https_lb" {

@@ -32,10 +32,10 @@ resource "google_compute_health_check" "healthcheck" {
   project = var.project_id
   name    = "${var.service_name}-healthcheck"
 
-  check_interval_sec  = 10
+  check_interval_sec  = 20
   timeout_sec         = 5
-  healthy_threshold   = 5
-  unhealthy_threshold = 10
+  healthy_threshold   = 2
+  unhealthy_threshold = 3
 
 
   http_health_check {

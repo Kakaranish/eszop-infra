@@ -25,3 +25,8 @@ variable "gateway_service_mig" {
 variable "gateway_service_healthcheck_id" {
   type = string
 }
+
+variable "backend_svc_timeout_sec" {
+  type    = number
+  default = 30
+}
