@@ -3,7 +3,7 @@ param(
   [switch] $AutoApprove
 )
 
-Import-Module $PSScriptRoot\..\..\..\scripts\Resolve-EnvPrefix.psm1 -Force
+Import-Module $PSScriptRoot\..\..\..\..\scripts\Resolve-EnvPrefix.psm1 -Force
 
 if (-not($env:ASPNETCORE_ENVIRONMENT)) {
   Write-Error "Environment variable ASPNETCORE_ENVIRONMENT not set" -ErrorAction Stop
