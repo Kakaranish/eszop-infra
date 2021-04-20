@@ -7,17 +7,12 @@ metadata:
     ingress.kubernetes.io/secure-backends: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: selfsigned-issuer
   name: eszop
   namespace: default
 spec:
-  tls:
-    - hosts:
-      - eszop.domain.com
-      secretName: eszop-cert
   rules:
-    - host: eszop.domain.com
-      http:
+     - http:
         paths:
           - path: /api/?(.*)
             backend:
