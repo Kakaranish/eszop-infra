@@ -4,6 +4,29 @@ locals {
   cluster_name          = "eszop-${var.environment}-cluster"
 }
 
+# ---  Existing resources  -----------------------------------------------------
+
+data "azurerm_user_assigned_identity" "managed_identity" {
+  resource_group_name = local.global_resource_group
+  name                = "eszop-managed-identity"
+}
+
+data "azurerm_container_registry" "container_registry" {
+  resource_group_name = local.global_resource_group
+  name                = "eszopregistry"
+}
+
+data "azurerm_public_ip" "cluster_ip" {
+  resource_group_name = local.global_resource_group
+  name                = "eszop-public"
+}
+
+data "azurerm_resource_group" "global_resource_group" {
+  name = local.global_resource_group
+}
+
+# ------------------------------------------------------------------------------
+
 resource "azurerm_kubernetes_cluster" "kube_cluster" {
   name                = local.cluster_name
   dns_prefix          = local.cluster_name
@@ -17,7 +40,8 @@ resource "azurerm_kubernetes_cluster" "kube_cluster" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type                      = "SystemAssigned"
+    user_assigned_identity_id = data.azurerm_user_assigned_identity.managed_identity.id
   }
 
   addon_profile {
@@ -27,13 +51,20 @@ resource "azurerm_kubernetes_cluster" "kube_cluster" {
   }
 }
 
-data "azurerm_container_registry" "container_registry" {
-  resource_group_name = local.global_resource_group
-  name                = "eszopregistry"
-}
-
 resource "azurerm_role_assignment" "cluster_to_acr" {
   scope                = data.azurerm_container_registry.container_registry.id
   role_definition_name = "AcrPull"
+  principal_id         = azurerm_kubernetes_cluster.kube_cluster.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "cluster_ra" {
   principal_id         = azurerm_kubernetes_cluster.kube_cluster.kubelet_identity[0].object_id
+  scope                = data.azurerm_container_registry.container_registry.id
+  role_definition_name = "AcrPull"
+}
+
+resource "azurerm_role_assignment" "role_assignment" {
+  principal_id         = azurerm_kubernetes_cluster.kube_cluster.identity[0].principal_id
+  role_definition_name = "Contributor"
+  scope                = data.azurerm_public_ip.cluster_ip.id
 }
