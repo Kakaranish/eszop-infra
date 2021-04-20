@@ -33,6 +33,11 @@ spec:
                 secretKeyRef:
                   name: eszop-secrets
                   key: ESZOP_AZURE_EVENTBUS_CONN_STR
+            - name: ESZOP_REDIS_CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: eszop-secrets
+                  key: ESZOP_REDIS_CONN_STR
           resources:
             limits:
               memory: "256Mi"
