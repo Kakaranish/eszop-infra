@@ -1,4 +1,4 @@
-Import-Module $PSScriptRoot\..\..\..\..\scripts\Resolve-EnvPrefix.psm1 -Force
+Import-Module $PSScriptRoot\..\..\..\..\..\scripts\Resolve-EnvPrefix.psm1 -Force
 Import-Module $PSScriptRoot\..\Config.psm1 -Force
 
 # ------------------------------------------------------------------------------
