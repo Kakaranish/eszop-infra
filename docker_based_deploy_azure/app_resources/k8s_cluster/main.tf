@@ -40,31 +40,19 @@ resource "azurerm_kubernetes_cluster" "kube_cluster" {
   }
 
   identity {
-    type                      = "SystemAssigned"
+    type                      = "UserAssigned"
     user_assigned_identity_id = data.azurerm_user_assigned_identity.managed_identity.id
   }
-
-  addon_profile {
-    kube_dashboard {
-      enabled = true
-    }
-  }
 }
 
-resource "azurerm_role_assignment" "cluster_to_acr" {
-  scope                = data.azurerm_container_registry.container_registry.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_kubernetes_cluster.kube_cluster.identity[0].principal_id
-}
-
-resource "azurerm_role_assignment" "cluster_ra" {
+resource "azurerm_role_assignment" "acr_role_assignment" {
   principal_id         = azurerm_kubernetes_cluster.kube_cluster.kubelet_identity[0].object_id
   scope                = data.azurerm_container_registry.container_registry.id
   role_definition_name = "AcrPull"
 }
 
-resource "azurerm_role_assignment" "role_assignment" {
-  principal_id         = azurerm_kubernetes_cluster.kube_cluster.identity[0].principal_id
+resource "azurerm_role_assignment" "ip_addr_role_assignment" {
+  principal_id         = data.azurerm_user_assigned_identity.managed_identity.principal_id
   role_definition_name = "Contributor"
   scope                = data.azurerm_public_ip.cluster_ip.id
 }
