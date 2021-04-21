@@ -40,6 +40,14 @@ spec:
           ports:
             - containerPort: 80
               name: api
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthcheck
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 10
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler

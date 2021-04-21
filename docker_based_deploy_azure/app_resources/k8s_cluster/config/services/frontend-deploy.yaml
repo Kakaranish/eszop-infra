@@ -17,11 +17,11 @@ spec:
           image: eszopregistry.azurecr.io/eszop-frontend:latest
           imagePullPolicy: Always
           env:
-          - name: ESZOP_API_URL
-            valueFrom:
-              configMapKeyRef:
-                key: ESZOP_API_URL
-                name: eszop-config
+            - name: ESZOP_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: ESZOP_API_URL
+                  name: eszop-config
           resources:
             limits:
               memory: "256Mi"
@@ -29,6 +29,14 @@ spec:
           ports:
             - containerPort: 80
               name: api
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthcheck
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 10
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
