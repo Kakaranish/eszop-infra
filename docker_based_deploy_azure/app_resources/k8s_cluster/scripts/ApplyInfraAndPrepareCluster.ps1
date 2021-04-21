@@ -1,4 +1,4 @@
-Import-Module .\Config.psm1 -Force
+Import-Module "$PSScriptRoot\Config.psm1" -Force
 
 & .\ApplyInfra.ps1 -Init -AutoApprove
 
@@ -8,4 +8,4 @@ az aks get-credentials `
     --name $cluster_name `
     --overwrite-existing
 
-& .\PrepareCluster.ps1
+& ".\helper-scripts\PrepareCluster.ps1"
