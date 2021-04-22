@@ -40,7 +40,7 @@ resource "google_compute_instance" "redis_vm" {
   }
 
   metadata = {
-    startup-script  = ". /scripts/boot.sh"
+    startup-script = ". /scripts/boot.sh"
     redis_password = var.redis_password
   }
 
