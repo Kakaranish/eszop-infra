@@ -42,13 +42,4 @@ Invoke-Expression "$PSScriptRoot\PrepareConfig.ps1 ``
 kubectl apply -f "$config_dir\config.yaml"
 kubectl apply -f "$config_dir\secrets.yaml"
 
-# ---  Deploy services  --------------------------------------------------------
-
-kubectl apply -f "$config_dir\services\api-gateway-deploy.yaml"
-kubectl apply -f "$config_dir\services\offers-deploy.yaml"
-kubectl apply -f "$config_dir\services\identity-deploy.yaml"
-kubectl apply -f "$config_dir\services\carts-deploy.yaml"
-kubectl apply -f "$config_dir\services\orders-deploy.yaml"
-kubectl apply -f "$config_dir\services\notification-deploy.yaml"
-
-kubectl apply -f "$config_dir\services\frontend-deploy.yaml"
+& "$PSScriptRoot\ApplyServices.ps1"
