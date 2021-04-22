@@ -1,3 +1,6 @@
+param (
+    [switch] $UseSelfSignedCertificates
+)
 Import-Module "$PSScriptRoot\Config.psm1" -Force
 
 & .\ApplyInfra.ps1 -Init -AutoApprove
@@ -8,4 +11,9 @@ az aks get-credentials `
     --name $cluster_name `
     --overwrite-existing
 
-& ".\helper-scripts\PrepareCluster.ps1"
+$params = @{}
+if ($UseSelfSignedCertificates.IsPresent) {
+    $params.Add("UseSelfSignedCertificates", $True)
+}
+
+& .\helper-scripts\PrepareCluster.ps1 @params

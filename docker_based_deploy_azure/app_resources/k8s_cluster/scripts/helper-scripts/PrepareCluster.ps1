@@ -1,3 +1,7 @@
+param (
+  [switch] $UseSelfSignedCertificates
+)
+
 Import-Module $PSScriptRoot\..\Config.psm1 -Force
 
 $config_dir = Resolve-Path -Path "$PSScriptRoot\..\..\config"
@@ -22,7 +26,12 @@ if (-not($ip_addr)) {
   Write-Host "[INFO] No static IP address found - ingress IP will be assigned dynamically" -ForegroundColor Green
 }
 
-& "$PSScriptRoot\ApplyCertIssuer.ps1" -IngressIpAddress $ip_addr
+$additionalCertIssuerParams = @{}
+if ($UseSelfSignedCertificates.IsPresent) {
+  $additionalCertIssuerParams.Add("UseSelfSigned", $True)
+}
+
+& "$PSScriptRoot\ApplyCertIssuer.ps1" -IngressIpAddress $ip_addr @additionalCertIssuerParams
 & "$PSScriptRoot\ApplyIngress.ps1" -IngressIpAddress $ip_addr
 
 $ingress_extenal_address = if ($domain_name) { $domain_name } else { $ip_addr }

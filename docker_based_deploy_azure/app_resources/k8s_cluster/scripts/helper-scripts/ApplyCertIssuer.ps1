@@ -1,5 +1,6 @@
 param (
-    [string] $IngressIpAddress
+    [string] $IngressIpAddress,
+    [switch] $UseSelfSigned
 )
 Import-Module $PSScriptRoot\..\Config.psm1 -Force
 
@@ -16,9 +17,11 @@ Write-Host "[INFO] Installing cert-manager" -ForegroundColor Green
 Write-Host "[INFO] Waiting for cert-manager webhooks | Sleep ${sleep_time}s..." -ForegroundColor Green
 Start-Sleep -Seconds $sleep_time
 
-if ($ip_addr) {
-    kubectl apply -f "$config_dir\cert-issuer.yaml"
+if ($UseSelfSigned.IsPresent -or $ip_addr) {
+    Write-Host "[INFO] Applying self-signed cert issuer"
+    kubectl apply -f "$config_dir\selfsigned-cert-issuer.yaml"
 }
 else {
-    kubectl apply -f "$config_dir\cert-issuer-dynamic.yaml"
+    Write-Host "[INFO] Applying cert issuer"
+    kubectl apply -f "$config_dir\cert-issuer.yaml"
 }
