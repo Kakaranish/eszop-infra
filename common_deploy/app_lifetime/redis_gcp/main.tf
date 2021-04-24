@@ -5,7 +5,8 @@ provider "google" {
 
 data "google_compute_address" "redis_db_address" {
   project = var.global_project_id
-  name = "redis-db-ip"
+  region  = var.region
+  name    = var.redis_address_res_name
 }
 
 data "google_compute_network" "vpc" {
@@ -30,7 +31,7 @@ resource "google_compute_firewall" "redis_firewall_rule" {
 }
 
 resource "google_compute_instance" "redis_vm" {
-  name         = "redis-db"
+  name         = "redis-${var.environment}-db"
   machine_type = "custom-1-1536"
   zone         = "europe-central2-a"
 
