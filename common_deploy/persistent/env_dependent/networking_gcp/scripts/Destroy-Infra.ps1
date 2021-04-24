@@ -2,7 +2,7 @@ param (
   [switch] $Init
 )
 
-$repo_root = "$PSScriptRoot\..\..\..\..\"
+$repo_root = "$PSScriptRoot\..\..\..\..\.."
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
 Import-Module "${repo_root}\scripts\Get-RequiredEnvPrefix.psm1" -Force -Scope Local

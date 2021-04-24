@@ -4,6 +4,7 @@ provider "google" {
 }
 
 data "google_compute_address" "redis_db_address" {
+  project = var.global_project_id
   name = "redis-db-ip"
 }
 
