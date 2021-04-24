@@ -1,6 +1,5 @@
 param(
-  [string] $BackupSuffix,
-  [switch] $Init
+  [string] $BackupSuffix
 )
 
 $repo_root = "$PSScriptRoot\..\..\..\.."
@@ -19,13 +18,22 @@ $apps_config = Get-AppsConfig
 $infra_config = Get-InfraConfig
 $infra_global_config = Get-InfraConfig -GlobalConfig
 
-if ($Init) {
-  terraform.exe -chdir="$tf_dir" init
-}
-
 if (-not($BackupSuffix)) {
   Get-ChildItem -Path "$PSScriptRoot\..\templates\basic" | Copy-Item -Destination $tf_dir
+}
+else {
+  Get-ChildItem -Path "$PSScriptRoot\..\templates\with_import" | Copy-Item -Destination $tf_dir
+}
 
+terraform.exe -chdir="$tf_dir" init
+
+(terraform -chdir="$tf_dir" workspace select $env_prefix) | Out-Null
+if ($LASTEXITCODE -ne 0) {
+  (terraform -chdir="$tf_dir" workspace new $env_prefix) | Out-Null
+}
+Write-Host "[INFO] Running in '$env_prefix' terraform workspace" -ForegroundColor Green
+
+if (-not($BackupSuffix)) {
   terraform.exe `
     -chdir="$tf_dir" `
     apply `
@@ -36,8 +44,6 @@ if (-not($BackupSuffix)) {
     -var="allowed_ip=$my_ip"
 }
 else {
-  Get-ChildItem -Path "$PSScriptRoot\..\templates\with_import" | Copy-Item -Destination $tf_dir
-
   terraform.exe `
     -chdir="$tf_dir" `
     apply `
@@ -63,9 +69,9 @@ $event_bus_conn_str = az servicebus namespace authorization-rule keys list `
   -o tsv
 
 (Update-AppsConfigValue `
-  -Field "ESZOP_AZURE_EVENTBUS_CONN_STR" `
-  -Value $event_bus_conn_str) | Out-Null
+    -Field "ESZOP_AZURE_EVENTBUS_CONN_STR" `
+    -Value $event_bus_conn_str) | Out-Null
 
 # ---  Cleanup  ----------------------------------------------------------------
 
-Remove-Item -Path "$PSScriptRoot\..\main.tf", "$PSScriptRoot\..\variables.tf" -Force
+Remove-Item -Path "$PSScriptRoot\..\main.tf", "$PSScriptRoot\..\variables.tf" -Force -ErrorAction SilentlyContinue

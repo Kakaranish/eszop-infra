@@ -1,6 +1,6 @@
 param(
-  [switch] $Init,
-  [string] $ImageName
+  [string] $ImageName,
+  [switch] $Init
 )
 
 $repo_root = "$PSScriptRoot\..\..\..\.."
