@@ -3,8 +3,18 @@ provider "google" {
   region  = var.region
 }
 
+data "google_compute_global_address" "external_lb_address" {
+  name = var.ingress_address_name
+}
+
+data "google_compute_address" "redis_address" {
+  project = var.global_project_id
+  name    = var.redis_address_name
+}
+
 locals {
   ESZOP_SQLSERVER_CONN_STR_TEMPLATE = "Server=tcp:eszop-${var.environment_prefix}-sqlserver.database.windows.net,1433;Initial Catalog=eszop-${var.environment_prefix}-{service_name}-db;Persist Security Info=False;User ID=${var.sql_server_db_username};Password=${var.sql_server_db_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  ESZOP_REDIS_CONN_STR              = "${data.google_compute_address.redis_address.address}:6379,password=${var.redis_db_password}"
 }
 
 resource "google_service_account" "service_account" {
@@ -12,10 +22,17 @@ resource "google_service_account" "service_account" {
   display_name = "eszop ${var.environment_prefix} env SA"
 }
 
+resource "google_project_iam_member" "project" {
+  project = var.global_project_id
+  role    = "roles/viewer"
+  member  = "serviceAccount:${google_service_account.service_account.email}"
+}
+
 module "frontend_mig" {
   source = "./modules/mig"
 
   project_id            = var.project_id
+  global_project_id     = var.global_project_id
   region                = var.region
   image_name            = var.frontend_image_name
   service_account_email = google_service_account.service_account.email
@@ -35,6 +52,7 @@ module "gateway_mig" {
   source = "./modules/mig"
 
   project_id            = var.project_id
+  global_project_id     = var.global_project_id
   region                = var.region
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
@@ -65,6 +83,7 @@ module "external_https_lb" {
   gateway_service_mig             = module.gateway_mig.instance_group
   gateway_service_healthcheck_id  = module.gateway_mig.healthcheck_id
   backend_svc_timeout_sec         = 86400
+  ingress_ip_address              = data.google_compute_global_address.external_lb_address.address
 }
 
 module "external_http_to_https_lb" {
@@ -75,6 +94,7 @@ module "offers_mig" {
   source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
+  global_project_id     = var.global_project_id
   region                = var.region
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
@@ -100,6 +120,7 @@ module "identity_mig" {
   source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
+  global_project_id     = var.global_project_id
   region                = var.region
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
@@ -116,7 +137,7 @@ module "identity_mig" {
     ASPNETCORE_URLS               = "http://+"
     ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
     ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
-    ESZOP_REDIS_CONN_STR          = var.ESZOP_REDIS_CONN_STR
+    ESZOP_REDIS_CONN_STR          = local.ESZOP_REDIS_CONN_STR
     ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "identity")
   }
 }
@@ -125,6 +146,7 @@ module "carts_mig" {
   source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
+  global_project_id     = var.global_project_id
   region                = var.region
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
@@ -149,6 +171,7 @@ module "orders_mig" {
   source = "./modules/mig_with_internal_lb"
 
   project_id            = var.project_id
+  global_project_id     = var.global_project_id
   region                = var.region
   image_name            = var.backend_image_name
   service_account_email = google_service_account.service_account.email
@@ -173,6 +196,7 @@ module "notification_service_mig" {
   source = "./modules/mig_with_internal_lb"
 
   project_id              = var.project_id
+  global_project_id       = var.global_project_id
   region                  = var.region
   image_name              = var.backend_image_name
   service_account_email   = google_service_account.service_account.email
@@ -190,7 +214,7 @@ module "notification_service_mig" {
     ASPNETCORE_URLS               = "http://+"
     ESZOP_LOGS_DIR                = var.ESZOP_LOGS_DIR
     ESZOP_AZURE_EVENTBUS_CONN_STR = var.ESZOP_AZURE_EVENTBUS_CONN_STR
-    ESZOP_REDIS_CONN_STR          = var.ESZOP_REDIS_CONN_STR
+    ESZOP_REDIS_CONN_STR          = local.ESZOP_REDIS_CONN_STR
     ESZOP_SQLSERVER_CONN_STR      = replace(local.ESZOP_SQLSERVER_CONN_STR_TEMPLATE, "{service_name}", "notification")
   }
 }

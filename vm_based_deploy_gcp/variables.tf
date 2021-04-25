@@ -2,9 +2,21 @@ variable "project_id" {
   type = string
 }
 
+variable "global_project_id" {
+  type = string
+}
+
 variable "region" {
   type    = string
   default = "europe-central2"
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "environment_prefix" {
+  type = string
 }
 
 variable "backend_image_name" {
@@ -15,11 +27,11 @@ variable "frontend_image_name" {
   type = string
 }
 
-variable "environment" {
+variable "ingress_address_name" {
   type = string
 }
 
-variable "environment_prefix" {
+variable "redis_address_name" {
   type = string
 }
 
@@ -59,6 +71,11 @@ variable "sql_server_db_password" {
   sensitive = true
 }
 
+variable "redis_db_password" {
+  type      = string
+  sensitive = true
+}
+
 variable "ESZOP_AZURE_EVENTBUS_CONN_STR" {
   type        = string
   description = "Azure ServiceBus connection string"
@@ -68,11 +85,5 @@ variable "ESZOP_AZURE_EVENTBUS_CONN_STR" {
 variable "ESZOP_AZURE_STORAGE_CONN_STR" {
   type        = string
   description = "Azure Storage connection string"
-  sensitive   = true
-}
-
-variable "ESZOP_REDIS_CONN_STR" {
-  type        = string
-  description = "Azure Redis Db connection string"
   sensitive   = true
 }

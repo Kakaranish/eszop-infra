@@ -1,7 +1,3 @@
-locals {
-  dns_zone = "eszop-dns-zone"
-}
-
 resource "google_compute_instance_template" "compute_instance_template" {
   project      = var.project_id
   region       = var.region
@@ -20,7 +16,7 @@ resource "google_compute_instance_template" "compute_instance_template" {
   }
 
   disk {
-    source_image = "projects/${var.project_id}/global/images/${var.image_name}"
+    source_image = "projects/${var.global_project_id}/global/images/${var.image_name}"
     auto_delete  = true
     boot         = true
     disk_type    = "pd-standard"
@@ -40,6 +36,7 @@ resource "google_compute_health_check" "healthcheck" {
   timeout_sec         = 5
   healthy_threshold   = 2
   unhealthy_threshold = 3
+
 
   http_health_check {
     port         = 80
@@ -89,49 +86,6 @@ resource "google_compute_region_autoscaler" "compute_engine_autoscaler" {
       target = 0.7
     }
   }
-}
-
-resource "google_compute_region_backend_service" "backend_service" {
-  project               = var.project_id
-  region                = var.region
-  name                  = "${var.service_name}-region-backend-service"
-  load_balancing_scheme = "INTERNAL"
-  timeout_sec           = var.backend_svc_timeout_sec
-
-  backend {
-    group = google_compute_region_instance_group_manager.instance_group.instance_group
-  }
-
-  health_checks = [google_compute_health_check.healthcheck.id]
-}
-
-resource "google_compute_forwarding_rule" "forwarding_rule" {
-  name          = "${var.service_name}-fwd-rule"
-  service_label = var.service_name
-  region        = var.region
-  project       = var.project_id
-
-  load_balancing_scheme = "INTERNAL"
-  backend_service       = google_compute_region_backend_service.backend_service.id
-  all_ports             = true
-  allow_global_access   = true
-}
-
-data "google_dns_managed_zone" "dns_zone" {
-  name = local.dns_zone
-}
-
-resource "google_dns_record_set" "a" {
-  name         = "${var.service_name}.${data.google_dns_managed_zone.dns_zone.dns_name}"
-  managed_zone = data.google_dns_managed_zone.dns_zone.name
-  type         = "A"
-  ttl          = 300
-
-  rrdatas = [google_compute_forwarding_rule.forwarding_rule.ip_address]
-}
-
-output "backend_id" {
-  value = google_compute_region_backend_service.backend_service.id
 }
 
 output "healthcheck_id" {

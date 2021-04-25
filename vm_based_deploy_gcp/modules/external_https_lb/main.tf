@@ -1,7 +1,3 @@
-data "google_compute_global_address" "external_lb_address" {
-  name = "external-lb-ip"
-}
-
 resource "google_compute_managed_ssl_certificate" "ssl_certificate" {
   name = "external-lb-cert"
 
@@ -71,5 +67,5 @@ resource "google_compute_global_forwarding_rule" "external_lb_fwd_rule" {
   name       = "external-https-lb-fwd-rule"
   target     = google_compute_target_https_proxy.external_proxy.id
   port_range = "443"
-  ip_address = data.google_compute_global_address.external_lb_address.address
+  ip_address = var.ingress_ip_address
 }

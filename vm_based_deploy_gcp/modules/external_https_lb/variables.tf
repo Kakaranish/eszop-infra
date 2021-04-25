@@ -10,6 +10,10 @@ variable "domain_name" {
   type = string
 }
 
+variable "ingress_ip_address" {
+  type = string
+}
+
 variable "frontend_service_mig" {
   type = string
 }

@@ -2,6 +2,10 @@ variable "project_id" {
   type = string
 }
 
+variable "global_project_id" {
+  type = string
+}
+
 variable "region" {
   type = string
 }
@@ -23,13 +27,8 @@ variable "metadata" {
 }
 
 variable "healthcheck_path" {
-  type = string
-  default = "/healthcheck"
-}
-
-variable "machine_type" {
   type    = string
-  default = "e2-medium"
+  default = "/healthcheck"
 }
 
 variable "min_replicas" {
@@ -40,4 +39,14 @@ variable "min_replicas" {
 variable "max_replicas" {
   type    = number
   default = 3
+}
+
+variable "machine_type" {
+  type    = string
+  default = "e2-medium"
+}
+
+variable "backend_svc_timeout_sec" {
+  type    = number
+  default = 30
 }
