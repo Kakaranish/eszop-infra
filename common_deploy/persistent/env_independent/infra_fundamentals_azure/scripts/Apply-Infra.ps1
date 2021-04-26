@@ -35,7 +35,7 @@ if ($LASTEXITCODE -eq 0) {
 
   New-Item -ItemType File -Path "$PSScriptRoot\container_registry_info.yaml" -Force | Out-Null
   $registry_info = @{
-    "RegistryLogin"     = $registry_credentials.username;
+    "RegistryLogin"     = $docker_image_prefix;
     "RegistryPassword1" = $registry_credentials.passwords[0].value;
     "RegistryPassword2" = $registry_credentials.passwords[1].value;
     "DockerImagePrefix" = $docker_image_prefix;

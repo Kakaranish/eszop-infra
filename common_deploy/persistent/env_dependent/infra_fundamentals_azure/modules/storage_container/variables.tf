@@ -1,4 +1,8 @@
-variable "subscription_id" {
+variable "global_resource_group" {
+  type = string
+}
+
+variable "global_storage_name" {
   type = string
 }
 
@@ -7,6 +11,6 @@ variable "location" {
   default = "Germany West Central"
 }
 
-variable "environment" {
+variable "env_prefix" {
   type = string
 }

@@ -1,5 +1,6 @@
 param(
-  [switch] $Init
+  [switch] $Init,
+  [switch] $AutoApprove
 )
 
 $repo_root = "$PSScriptRoot\..\..\..\..\.."
@@ -23,8 +24,16 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "[INFO] Running in '$env_prefix' terraform workspace" -ForegroundColor Green
 
-terraform.exe `
-  -chdir="$tf_dir" `
-  destroy `
-  -var="environment=${env_prefix}" `
-  -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)"
+$apply_command = @"
+terraform ``
+  -chdir="$tf_dir" ``
+  destroy ``
+  -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)" ``
+  -var="env_prefix=${env_prefix}"
+"@
+
+if ($AutoApprove.IsPresent) {
+  $apply_command = -join ($apply_command, " ```n  -auto-approve")
+}
+
+Invoke-Expression $apply_command
