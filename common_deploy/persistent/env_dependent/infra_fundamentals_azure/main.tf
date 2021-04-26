@@ -17,3 +17,10 @@ module "storage_container" {
   location              = var.location
   env_prefix            = var.env_prefix
 }
+
+module "identity" {
+  source = "./modules/identity"
+
+  location   = var.location
+  env_prefix = var.env_prefix
+}
