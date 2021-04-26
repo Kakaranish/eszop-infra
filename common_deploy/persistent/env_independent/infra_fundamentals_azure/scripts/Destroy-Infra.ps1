@@ -1,5 +1,6 @@
 param(
-  [switch] $Init
+  [switch] $Init,
+  [switch] $AutoApprove
 )
 
 $repo_root = "$PSScriptRoot\..\..\..\..\.."
@@ -15,7 +16,15 @@ if ($Init) {
   terraform.exe -chdir="$tf_dir" init
 }
 
-terraform.exe `
-  -chdir="$tf_dir" `
-  apply `
+$apply_command = @"
+terraform ``
+  -chdir="$tf_dir" ``
+  destroy ``
   -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)"
+"@
+
+if ($AutoApprove.IsPresent) {
+  $apply_command = -join ($apply_command, " ```n  -auto-approve")
+}
+
+Invoke-Expression $apply_command
