@@ -1,4 +1,8 @@
 param(
+  [Parameter(Mandatory = $true)]
+  [ValidateSet("dev", "staging", "prod")] 
+  [string] $CloudEnv,
+
   [string] $BackendImageName,
   [string] $FrontendImageName,
   [switch] $Init,
@@ -8,19 +12,23 @@ param(
 $repo_root = "$PSScriptRoot\..\.."
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
-Import-Module "${repo_root}\scripts\Get-RequiredEnvPrefix.psm1" -Force -Scope Local
 Import-Module "${repo_root}\scripts\Get-AppsConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
-$env_prefix = Get-RequiredEnvPrefix
-$apps_config = Get-AppsConfig
-$infra_global_config = Get-InfraConfig -GlobalConfig
-$infra_config = Get-InfraConfig
+$env_prefix_map = @{
+  "dev"     = "Staging";
+  "staging" = "Staging";
+  "prod"    = "Production"
+}
+
+$apps_config = Get-AppsConfig -CloudEnv $CloudEnv
+$infra_global_config = Get-InfraConfig -CloudEnv "global"
+$infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 
 if ($UsePreviousParams.IsPresent) {
-  $cache_yaml = Get-Content -Path ".cache" | ConvertFrom-Yaml
+  $cache_yaml = Get-Content -Path "$PSScriptRoot\output\${CloudEnv}_cache.yaml" | ConvertFrom-Yaml
   $BackendImageName = $cache_yaml.backend_image_name
   $FrontendImageName = $cache_yaml.frontend_image_name
 }
@@ -33,27 +41,27 @@ if (-not($FrontendImageName)) {
 }
 
 Write-Host "[INFO] Running with params:" -ForegroundColor Green
-Write-Host "[INFO] Environment: $env:ASPNETCORE_ENVIRONMENT" -ForegroundColor Green
+Write-Host "[INFO] Environment: $CloudEnv" -ForegroundColor Green
 Write-Host "[INFO] BackendImageName: $BackendImageName" -ForegroundColor Green
 Write-Host "[INFO] FrontendImageName: $FrontendImageName" -ForegroundColor Green
 
-if ($Init) {
-  terraform.exe -chdir="$tf_dir" init
+if ($Init.IsPresent) {
+  terraform -chdir="$tf_dir" init
 }
 
-(terraform -chdir="$tf_dir" workspace select $env_prefix) | Out-Null
+(terraform -chdir="$tf_dir" workspace select $CloudEnv) | Out-Null
 if ($LASTEXITCODE -ne 0) {
-  (terraform -chdir="$tf_dir" workspace new $env_prefix) | Out-Null
+  (terraform -chdir="$tf_dir" workspace new $CloudEnv) | Out-Null
 }
-Write-Host "[INFO] Running in '$env_prefix' terraform workspace" -ForegroundColor Green
+Write-Host "[INFO] Running in '$CloudEnv' terraform workspace" -ForegroundColor Green
 
-terraform.exe `
+terraform `
   -chdir="$tf_dir" `
   apply `
   -var="project_id=$($infra_config.GCP_PROJECT_ID)" `
   -var="global_project_id=$($infra_global_config.GCP_PROJECT_ID)" `
-  -var="environment=$env:ASPNETCORE_ENVIRONMENT" `
-  -var="environment_prefix=$env_prefix" `
+  -var="environment=$($env_prefix_map[$CloudEnv])" `
+  -var="environment_prefix=$CloudEnv" `
   -var="backend_image_name=$BackendImageName" `
   -var="frontend_image_name=$FrontendImageName" `
   -var="ingress_address_name=$($infra_config.GCP_INGRESS_ADDRESS_RES_NAME)" `
@@ -69,5 +77,4 @@ $cache_content = @{
   backend_image_name  = $BackendImageName;
   frontend_image_name = $FrontendImageName
 }
-New-Item -ItemType File -Name ".cache" -Force | Out-Null
-$cache_content | ConvertTo-Yaml | Set-Content ".cache" -NoNewline
+$cache_content | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${CloudEnv}_cache.yaml" -NoNewline
