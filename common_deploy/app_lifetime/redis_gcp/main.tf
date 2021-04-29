@@ -37,7 +37,7 @@ resource "google_compute_instance" "redis_vm" {
 
   boot_disk {
     initialize_params {
-      image = "projects/${var.project_id}/global/images/${var.image_name}"
+      image = "projects/${var.global_project_id}/global/images/${var.image_name}"
     }
   }
 
