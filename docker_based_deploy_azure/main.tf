@@ -1,15 +1,10 @@
 locals {
   global_resource_group = "eszop"
-  resource_group        = "eszop-${var.environment}"
-  cluster_name          = "eszop-${var.environment}-cluster"
+  resource_group        = "eszop-${var.env_prefix}"
+  cluster_name          = "eszop-${var.env_prefix}-cluster"
 }
 
 # ---  Existing resources  -----------------------------------------------------
-
-data "azurerm_user_assigned_identity" "managed_identity" {
-  resource_group_name = local.global_resource_group
-  name                = "eszop-managed-identity"
-}
 
 data "azurerm_container_registry" "container_registry" {
   resource_group_name = local.global_resource_group
@@ -17,12 +12,13 @@ data "azurerm_container_registry" "container_registry" {
 }
 
 data "azurerm_public_ip" "cluster_ip" {
-  resource_group_name = local.global_resource_group
-  name                = "eszop-public"
+  resource_group_name = local.resource_group
+  name                = var.cluster_address_res_name
 }
 
-data "azurerm_resource_group" "global_resource_group" {
-  name = local.global_resource_group
+data "azurerm_user_assigned_identity" "managed_identity" {
+  resource_group_name = local.resource_group
+  name                = "eszop-${var.env_prefix}-managed-identity"
 }
 
 # ------------------------------------------------------------------------------
@@ -49,10 +45,4 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
   principal_id         = azurerm_kubernetes_cluster.kube_cluster.kubelet_identity[0].object_id
   scope                = data.azurerm_container_registry.container_registry.id
   role_definition_name = "AcrPull"
-}
-
-resource "azurerm_role_assignment" "ip_addr_role_assignment" {
-  principal_id         = data.azurerm_user_assigned_identity.managed_identity.principal_id
-  role_definition_name = "Contributor"
-  scope                = data.azurerm_public_ip.cluster_ip.id
 }

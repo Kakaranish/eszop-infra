@@ -7,6 +7,10 @@ variable "location" {
   default = "Germany West Central"
 }
 
-variable "environment" {
+variable "env_prefix" {
+  type = string
+}
+
+variable "cluster_address_res_name" {
   type = string
 }

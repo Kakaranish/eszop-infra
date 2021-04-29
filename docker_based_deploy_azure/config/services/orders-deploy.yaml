@@ -1,24 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: identity
+  name: orders
 spec:
   selector:
     matchLabels:
-      app: identity
+      app: orders
   replicas: 1
   template:
     metadata:
       labels:
-        app: identity
+        app: orders
     spec:
       containers:
-        - name: identity
-          image: eszopregistry.azurecr.io/eszop-identity-api:latest
+        - name: orders
+          image: eszopregistry.azurecr.io/eszop-orders-api:latest
           imagePullPolicy: Always
           env:
             - name: ASPNETCORE_ENVIRONMENT
-              value: Staging
+              valueFrom:
+                configMapKeyRef:
+                  key: ASPNETCORE_ENVIRONMENT
+                  name: eszop-config
             - name: ASPNETCORE_URLS
               value: http://+
             - name: ESZOP_LOGS_DIR
@@ -27,17 +30,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: eszop-secrets
-                  key: ESZOP_SQLSERVER_CONN_STR_IDENTITY
+                  key: ESZOP_SQLSERVER_CONN_STR_ORDERS
             - name: ESZOP_AZURE_EVENTBUS_CONN_STR
               valueFrom:
                 secretKeyRef:
                   name: eszop-secrets
                   key: ESZOP_AZURE_EVENTBUS_CONN_STR
-            - name: ESZOP_REDIS_CONN_STR
-              valueFrom:
-                secretKeyRef:
-                  name: eszop-secrets
-                  key: ESZOP_REDIS_CONN_STR
           resources:
             limits:
               memory: "256Mi"
@@ -45,8 +43,6 @@ spec:
           ports:
             - containerPort: 80
               name: api
-            - containerPort: 8080
-              name: grpc
           readinessProbe:
             httpGet:
               scheme: HTTP
@@ -59,12 +55,12 @@ spec:
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: identity-hpa
+  name: orders-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: identity
+    name: orders
   minReplicas: 1
   maxReplicas: 3
   targetCPUUtilizationPercentage: 50
@@ -72,10 +68,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: eszop-identity-api
+  name: eszop-orders-api
 spec:
   selector:
-    app: identity
+    app: orders
   ports:
     - port: 80
       targetPort: 80

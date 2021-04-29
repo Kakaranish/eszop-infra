@@ -18,7 +18,10 @@ spec:
           imagePullPolicy: Always
           env:
             - name: ASPNETCORE_ENVIRONMENT
-              value: Staging
+              valueFrom:
+                configMapKeyRef:
+                  key: ASPNETCORE_ENVIRONMENT
+                  name: eszop-config
             - name: ASPNETCORE_URLS
               value: http://+
             - name: ESZOP_LOGS_DIR
