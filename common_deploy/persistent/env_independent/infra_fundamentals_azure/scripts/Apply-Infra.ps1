@@ -10,10 +10,10 @@ Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
-$infra_global_config = Get-InfraConfig -GlobalConfig
+$infra_global_config = Get-InfraConfig -CloudEnv "global"
 
 if ($Init) {
-  terraform.exe -chdir="$tf_dir" init
+  terraform -chdir="$tf_dir" init
 }
 
 $apply_command = @"
@@ -30,10 +30,13 @@ if ($AutoApprove.IsPresent) {
 Invoke-Expression $apply_command
 
 if ($LASTEXITCODE -eq 0) {
+  if (-not(Test-Path -Path "$PSScriptRoot\output")) {
+    New-Item -ItemType Directory -Path "$PSScriptRoot\output" | Out-Null
+  }
+  
   $registry_credentials = (az acr credential show --resource-group eszop --name "eszopregistry" | ConvertFrom-Json)
   $docker_image_prefix = (az acr show --resource-group eszop --name eszopregistry --query loginServer -o tsv)
 
-  New-Item -ItemType File -Path "$PSScriptRoot\container_registry_info.yaml" -Force | Out-Null
   $registry_info = @{
     "RegistryLogin"     = $docker_image_prefix;
     "RegistryPassword1" = $registry_credentials.passwords[0].value;
@@ -41,7 +44,7 @@ if ($LASTEXITCODE -eq 0) {
     "DockerImagePrefix" = $docker_image_prefix;
   }
 
-  $registry_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\container_registry_info.yaml" -NoNewline
+  $registry_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\container_registry_info.yaml" -NoNewline
 
   # ----------------------------------------------------------------------------
 
@@ -51,5 +54,5 @@ if ($LASTEXITCODE -eq 0) {
     --query "connectionString" `
     -o tsv
   $storage_info = @{ "ConnectionString" = $conn_str; }
-  $storage_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\storage_info.yaml" -NoNewline
+  $storage_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\storage_info.yaml" -NoNewline
 }

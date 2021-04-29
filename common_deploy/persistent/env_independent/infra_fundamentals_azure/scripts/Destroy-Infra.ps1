@@ -10,10 +10,10 @@ Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
-$infra_global_config = Get-InfraConfig -GlobalConfig
+$infra_global_config = Get-InfraConfig -CloudEnv "global"
 
 if ($Init) {
-  terraform.exe -chdir="$tf_dir" init
+  terraform -chdir="$tf_dir" init
 }
 
 $apply_command = @"

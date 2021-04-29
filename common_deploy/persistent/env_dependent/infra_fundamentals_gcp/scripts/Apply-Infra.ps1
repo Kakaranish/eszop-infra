@@ -1,10 +1,9 @@
-param(
+param (
   [Parameter(Mandatory = $true)]
   [ValidateSet("dev", "staging", "prod")] 
   [string] $CloudEnv,
 
-  [switch] $Init,
-  [switch] $AutoApprove
+  [switch] $Init
 )
 
 $repo_root = "$PSScriptRoot\..\..\..\..\.."
@@ -14,7 +13,7 @@ Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
-$infra_global_config = Get-InfraConfig -CloudEnv "global"
+$infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 
 if ($Init) {
   terraform -chdir="$tf_dir" init
@@ -26,16 +25,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "[INFO] Running in '$CloudEnv' terraform workspace" -ForegroundColor Green
 
-$apply_command = @"
-terraform ``
-  -chdir="$tf_dir" ``
-  destroy ``
-  -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)" ``
-  -var="env_prefix=$CloudEnv"
-"@
-
-if ($AutoApprove.IsPresent) {
-  $apply_command = -join ($apply_command, " ```n  -auto-approve")
-}
-
-Invoke-Expression $apply_command
+terraform `
+  -chdir="$tf_dir" `
+  apply `
+  -var "project_id=$($infra_config.GCP_PROJECT_ID)"
