@@ -13,10 +13,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - [ESZOP_DOMAIN]
+        - ESZOP.DOMAIN.COM
       secretName: eszop-cert
   rules:
-    - host: [ESZOP_DOMAIN]
+    - host: ESZOP.DOMAIN.COM
       http:
         paths:
           - path: /api/?(.*)

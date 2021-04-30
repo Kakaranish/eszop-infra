@@ -7,7 +7,7 @@ param (
 )
 
 $repo_root = "$PSScriptRoot\..\..\.."
-$config_dir = Resolve-Path -Path "$PSScriptRoot\..\..\config"
+$kubernetes_dir = Resolve-Path -Path "$PSScriptRoot\..\..\kubernetes"
 
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
@@ -47,12 +47,12 @@ if ($UseSelfSignedCertificates.IsPresent) {
   -IngressIpAddress $ip_addr
 
 $ingress_extenal_address = if ($domain_name) { $domain_name } else { $ip_addr }
-Invoke-Expression "$PSScriptRoot\Prepare-Config.ps1 ``
+Invoke-Expression "$PSScriptRoot\Prepare-ConfigMap.ps1 ``
   -IngressExternalAddress $ingress_extenal_address"
 
 . "$PSScriptRoot\Prepare-Secrets.ps1" -CloudEnv $CloudEnv
 
-kubectl apply -f "$config_dir\config.yaml"
-kubectl apply -f "$config_dir\secrets.yaml"
+kubectl apply -f "$kubernetes_dir\config-map.yaml"
+kubectl apply -f "$kubernetes_dir\secrets.yaml"
 
 . "$PSScriptRoot\Apply-Services.ps1"

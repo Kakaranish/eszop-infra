@@ -3,7 +3,7 @@ param (
   [switch] $UseSelfSigned
 )
 
-$config_dir = Resolve-Path -Path "$PSScriptRoot\..\..\config"
+$kubernetes_dir = Resolve-Path -Path "$PSScriptRoot\..\..\kubernetes"
 
 # ------------------------------------------------------------------------------
 
@@ -20,9 +20,9 @@ kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io cert
 
 if ($UseSelfSigned.IsPresent) {
   Write-Host "[INFO] Applying self-signed cert issuer"
-  kubectl apply -f "$config_dir\selfsigned-cert-issuer.yaml"
+  kubectl apply -f "$kubernetes_dir\selfsigned-cert-issuer.yaml"
 }
 else {
   Write-Host "[INFO] Applying cert issuer"
-  kubectl apply -f "$config_dir\cert-issuer.yaml"
+  kubectl apply -f "$kubernetes_dir\cert-issuer.yaml"
 }

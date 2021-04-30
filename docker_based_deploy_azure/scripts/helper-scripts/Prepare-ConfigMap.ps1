@@ -2,7 +2,7 @@ param (
     [string] $IngressExternalAddress
 )
 
-$config_path = "$PSScriptRoot\..\..\config\config.yaml"
+$config_path = "$PSScriptRoot\..\..\kubernetes\config-map.yaml"
 $config_yaml = Get-Content -Path $config_path | ConvertFrom-Yaml -Ordered
 
 $config_yaml.data.ESZOP_API_URL = "https://$IngressExternalAddress/api"

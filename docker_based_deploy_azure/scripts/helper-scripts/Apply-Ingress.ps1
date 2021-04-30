@@ -7,7 +7,7 @@ param (
 )
 
 $repo_root = "$PSScriptRoot\..\..\.."
-$config_dir = Resolve-Path -Path "$PSScriptRoot\..\..\config"
+$kubernetes_dir = Resolve-Path -Path "$PSScriptRoot\..\..\kubernetes"
 
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
@@ -29,7 +29,7 @@ if ($IngressIpAddress) {
   
   kubectl delete -A ValidatingWebhookConfiguration nginx-ingress-ingress-nginx-admission
 
-  kubectl apply -f "$config_dir\ingress.yaml"
+  kubectl apply -f "$kubernetes_dir\ingress.yaml"
   Write-Host "[INFO] Applied ingress.yaml" -ForegroundColor Green
 }
 else {
@@ -67,5 +67,5 @@ else {
   kubectl delete -A ValidatingWebhookConfiguration nginx-ingress-ingress-nginx-admission
 
   Write-Host "[INFO] Applied ingress.yaml" -ForegroundColor Green
-  kubectl apply -f "$config_dir\ingress-dynamic.yaml"
+  kubectl apply -f "$kubernetes_dir\ingress-dynamic.yaml"
 }

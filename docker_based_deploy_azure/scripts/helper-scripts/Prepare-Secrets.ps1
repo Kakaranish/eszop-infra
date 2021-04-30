@@ -5,7 +5,7 @@ param(
 )
 
 $repo_root = "$PSScriptRoot\..\..\.."
-$secrets_path = "$PSScriptRoot\..\..\config\secrets.yaml"
+$secrets_path = "$PSScriptRoot\..\..\kubernetes\secrets.yaml"
 
 Import-Module "$PSScriptRoot\ConvertTo-Base64.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
