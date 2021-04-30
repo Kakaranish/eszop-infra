@@ -55,4 +55,4 @@ Invoke-Expression "$PSScriptRoot\Prepare-ConfigMap.ps1 ``
 kubectl apply -f "$kubernetes_dir\config-map.yaml"
 kubectl apply -f "$kubernetes_dir\secrets.yaml"
 
-. "$PSScriptRoot\Apply-Services.ps1"
+. "$PSScriptRoot\Apply-Services.ps1" -CloudEnv $CloudEnv

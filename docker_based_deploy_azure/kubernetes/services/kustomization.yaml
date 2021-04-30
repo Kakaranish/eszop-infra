@@ -1,0 +1,8 @@
+resources:
+  - api-gateway-deploy.yaml
+  - carts-deploy.yaml
+  - frontend-deploy.yaml
+  - identity-deploy.yaml
+  - notification-deploy.yaml
+  - offers-deploy.yaml
+  - orders-deploy.yaml

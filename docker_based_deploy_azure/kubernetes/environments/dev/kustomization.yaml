@@ -1,0 +1,20 @@
+bases:
+  - ../../services
+images:
+  - name: eszopregistry.azurecr.io/eszop-api-gateway
+    newTag: "1.0"
+  - name: eszopregistry.azurecr.io/eszop-offers-api
+    newTag: "1.0"
+  - name: eszopregistry.azurecr.io/eszop-identity-api
+    newTag: "1.0"
+  - name: eszopregistry.azurecr.io/eszop-carts-api
+    newTag: "1.0"
+  - name: eszopregistry.azurecr.io/eszop-orders-api
+    newTag: "1.0"
+  - name: eszopregistry.azurecr.io/eszop-notification-service
+    newTag: "1.0"
+  - name: eszopregistry.azurecr.io/eszop-frontend
+    newTag: "1.1"
+
+commonLabels:
+  environment: "dev"
