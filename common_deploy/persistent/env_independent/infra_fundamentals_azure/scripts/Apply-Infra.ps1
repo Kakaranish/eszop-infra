@@ -7,6 +7,7 @@ $repo_root = "$PSScriptRoot\..\..\..\..\.."
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
+Import-Module "${repo_root}\scripts\Update-InfraConfigOutput.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
@@ -55,4 +56,12 @@ if ($LASTEXITCODE -eq 0) {
     -o tsv
   $storage_info = @{ "ConnectionString" = $conn_str; }
   $storage_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\storage_info.yaml" -NoNewline
+
+  $envs_to_update = @("dev", "staging", "prod")
+  $infra_output = @{"AZURE_STORAGE_CONN_STR" = $conn_str; }
+  foreach ($env in $envs_to_update) {
+    Update-InfraConfigOutput `
+      -CloudEnv $env `
+      -Entries $infra_output 
+  }
 }

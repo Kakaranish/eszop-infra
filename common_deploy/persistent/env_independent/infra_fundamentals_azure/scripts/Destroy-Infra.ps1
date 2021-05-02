@@ -28,3 +28,13 @@ if ($AutoApprove.IsPresent) {
 }
 
 Invoke-Expression $apply_command
+
+if ($LASTEXITCODE -eq 0) {
+  $envs_to_update = @("dev", "staging", "prod")
+  $infra_output = @{"AZURE_STORAGE_CONN_STR" = "NEEDS_TO_BE_GENERATED"; }
+  foreach ($env in $envs_to_update) {
+    Update-InfraConfigOutput `
+      -CloudEnv $env `
+      -Entries $infra_output 
+  }
+}

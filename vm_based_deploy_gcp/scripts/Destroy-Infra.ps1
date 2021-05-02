@@ -11,6 +11,7 @@ $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
 Import-Module "${repo_root}\scripts\Get-AppsConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
+Import-Module "${repo_root}\scripts\Get-InfraConfigOutput.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ $env_prefix_map = @{
 $apps_config = Get-AppsConfig -CloudEnv $CloudEnv
 $infra_global_config = Get-InfraConfig -CloudEnv "global"
 $infra_config = Get-InfraConfig -CloudEnv $CloudEnv
+$infra_output = Get-InfraConfigOutput -CloudEnv $CloudEnv
 
 if ($Init) {
   terraform -chdir="$tf_dir" init
@@ -45,10 +47,10 @@ terraform `
   -var="backend_image_name=$($cache_yaml.backend_image_name)" `
   -var="frontend_image_name=$($cache_yaml.frontend_image_name)" `
   -var="ingress_address_name=$($infra_config.GCP_INGRESS_ADDRESS_RES_NAME)" `
-  -var="redis_address_name=$($infra_config.GCP_REDIS_ADDRESS_RES_NAME)" `
+  -var="redis_address_ip=$($infra_output.REDIS_ADDRESS)" `
   -var="domain_name=$($infra_config.VM_BASED_DOMAIN_NAME)" `
   -var="sql_server_db_username=$($apps_config.SQLSERVER_USERNAME)" `
   -var="sql_server_db_password=$($apps_config.SQLSERVER_PASSWORD)" `
   -var="redis_db_password=$($apps_config.REDIS_PASSWORD)" `
-  -var="ESZOP_AZURE_EVENTBUS_CONN_STR=$($apps_config.AZURE_EVENTBUS_CONN_STR)" `
-  -var="ESZOP_AZURE_STORAGE_CONN_STR=$($apps_config.AZURE_STORAGE_CONN_STR)"
+  -var="ESZOP_AZURE_EVENTBUS_CONN_STR=$($infra_output.AZURE_EVENTBUS_CONN_STR)" `
+  -var="ESZOP_AZURE_STORAGE_CONN_STR=$($infra_output.AZURE_STORAGE_CONN_STR)"

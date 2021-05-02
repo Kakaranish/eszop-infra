@@ -11,9 +11,9 @@ param(
 $repo_root = "$PSScriptRoot\..\..\..\.."
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
-Import-Module "${repo_root}\scripts\Update-AppsConfigValue.psm1" -Force -Scope Local
 Import-Module "${repo_root}\scripts\Get-AppsConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
+Import-Module "${repo_root}\scripts\Update-InfraConfigOutput.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
@@ -90,10 +90,10 @@ if ($LASTEXITCODE -ne 0) {
 
 # ---  Update AppsConfig  ------------------------------------------------------
 
-(Update-AppsConfigValue `
-    -CloudEnv $CloudEnv `
-    -Field "AZURE_EVENTBUS_CONN_STR" `
-    -Value "`"[PROVIDE VALUE]`"") | Out-Null
+$infra_output = @{"AZURE_EVENTBUS_CONN_STR" = "NEEDS_TO_BE_GENERATED" }
+Update-InfraConfigOutput `
+  -CloudEnv $CloudEnv `
+  -Entries $infra_output
 
 # ---  Cleanup  ----------------------------------------------------------------
 

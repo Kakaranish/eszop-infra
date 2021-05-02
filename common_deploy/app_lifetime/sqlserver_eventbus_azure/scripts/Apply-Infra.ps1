@@ -4,15 +4,16 @@ param(
   [string] $CloudEnv,
 
   [string] $BackupSuffix,
+  [switch] $UsePreviousBackupSuffix,
   [switch] $AutoApprove
 )
 
 $repo_root = "$PSScriptRoot\..\..\..\.."
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
-Import-Module "${repo_root}\scripts\Update-AppsConfigValue.psm1" -Force -Scope Local
 Import-Module "${repo_root}\scripts\Get-AppsConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
+Import-Module "${repo_root}\scripts\Update-InfraConfigOutput.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
@@ -20,7 +21,7 @@ $apps_config = Get-AppsConfig -CloudEnv $CloudEnv
 $infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 $infra_global_config = Get-InfraConfig -CloudEnv "global"
 
-if (-not($BackupSuffix)) {
+if (-not($BackupSuffix) -and -not($UsePreviousBackupSuffix.IsPresent)) {
   Get-ChildItem -Path "$PSScriptRoot\..\templates\basic" | Copy-Item -Destination $tf_dir
 }
 else {
@@ -37,7 +38,9 @@ Write-Host "[INFO] Running in '$CloudEnv' terraform workspace" -ForegroundColor 
 
 $my_ip = (Invoke-WebRequest ipinfo.io/ip).Content.Trim()
 
-if (-not($BackupSuffix)) {
+$backup_suffix = $null
+
+if (-not($UsePreviousBackupSuffix.IsPresent) -and -not($BackupSuffix)) {
   $apply_command = @"
   terraform ``
     -chdir="$tf_dir" ``
@@ -50,6 +53,21 @@ if (-not($BackupSuffix)) {
 "@
 }
 else {
+  if ($BackupSuffix) {
+    $backup_suffix = $BackupSuffix
+  }
+  else {
+    $cache_path = "$PSScriptRoot\output\cache.yaml"
+    if (-not(Test-Path $cache_path) ) {
+      Write-Error "Cannot read cached backup suffix" -ErrorAction Stop
+    }
+
+    $backup_suffix = (Get-Content $cache_path | ConvertFrom-Yaml).LastBackupSuffix
+    if (-not($backup_suffix)) {
+      Write-Error "Cannot read cached backup suffix" -ErrorAction Stop
+    }
+  }
+  
   $apply_command = @"
   terraform ``
     -chdir="$tf_dir" ``
@@ -60,7 +78,7 @@ else {
     -var="environment=$CloudEnv" ``
     -var="allowed_ip=$my_ip" ``
     -var="backups_container_uri=$($infra_global_config.AZ_BACKUPS_CONTAINER_URI)" ``
-    -var="import_suffix=$BackupSuffix"
+    -var="import_suffix=${backup_suffix}"
 "@
 }
 
@@ -82,21 +100,20 @@ $event_bus_conn_str = az servicebus namespace authorization-rule keys list `
   --query primaryConnectionString `
   -o tsv
 
-(Update-AppsConfigValue `
-    -CloudEnv $CloudEnv `
-    -Field "AZURE_EVENTBUS_CONN_STR" `
-    -Value $event_bus_conn_str) | Out-Null
 
-$output_filename = "cache.yaml"
+$infra_output = @{"AZURE_EVENTBUS_CONN_STR" = $event_bus_conn_str; }
+Update-InfraConfigOutput `
+  -CloudEnv $CloudEnv `
+  -Entries $infra_output
+
 if (-not(Test-Path -Path "$PSScriptRoot\output")) {
   New-Item -ItemType Directory "output" | Out-Null
 }
-New-Item -ItemType File -Path "$PSScriptRoot\output\${output_filename}" -Force | Out-Null
 $cache_info = @{ 
-  "LastBackupSuffix"         = $BackupSuffix;
+  "LastBackupSuffix"         = $backup_suffix;
   "EventBusConnectionString" = $event_bus_conn_str
 }
-$cache_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${output_filename}" -NoNewline
+$cache_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\cache.yaml" -NoNewline
 
 # ---  Cleanup  ----------------------------------------------------------------
 

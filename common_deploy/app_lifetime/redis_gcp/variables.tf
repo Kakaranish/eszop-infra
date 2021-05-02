@@ -20,10 +20,6 @@ variable "redis_password" {
   sensitive = true
 }
 
-variable "redis_address_res_name" {
-  type = string
-}
-
-variable "environment" {
+variable "env_prefix" {
   type = string
 }

@@ -13,6 +13,7 @@ $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
 Import-Module "${repo_root}\scripts\Get-AppsConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
+Import-Module "${repo_root}\scripts\Update-InfraConfigOutput.psm1" -Force
 Import-Module "$PSScriptRoot\Config.psm1" -Force # Helper config
 
 # ------------------------------------------------------------------------------
@@ -42,9 +43,15 @@ else {
 terraform `
   -chdir="$tf_dir" `
   destroy `
-  -var "project_id=$($infra_global_config.GCP_PROJECT_ID)" `
+  -var "project_id=$($infra_config.GCP_PROJECT_ID)" `
   -var "global_project_id=$($infra_global_config.GCP_PROJECT_ID)" `
   -var="redis_password=$($apps_config.REDIS_PASSWORD)" `
-  -var="environment=$CloudEnv" `
-  -var="image_name=${image_name_to_apply}" `
-  -var="redis_address_res_name=$($infra_config.GCP_REDIS_ADDRESS_RES_NAME)"
+  -var="env_prefix=$CloudEnv" `
+  -var="image_name=${image_name_to_apply}"
+
+if ($LASTEXITCODE -eq 0) {
+  $infra_output = @{"REDIS_ADDRESS" = "NEEDS_TO_BE_GENERATED" }
+  Update-InfraConfigOutput `
+    -CloudEnv $CloudEnv `
+    -Entries $infra_output
+}

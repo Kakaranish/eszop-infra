@@ -31,10 +31,6 @@ variable "ingress_address_name" {
   type = string
 }
 
-variable "redis_address_name" {
-  type = string
-}
-
 variable "domain_name" {
   type = string
 }
@@ -69,6 +65,10 @@ variable "sql_server_db_username" {
 variable "sql_server_db_password" {
   type      = string
   sensitive = true
+}
+
+variable "redis_address_ip" {
+  type = string
 }
 
 variable "redis_db_password" {
