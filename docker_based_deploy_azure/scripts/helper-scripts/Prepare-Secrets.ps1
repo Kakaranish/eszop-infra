@@ -19,8 +19,8 @@ if (-not($secrets_yaml.data)) {
   $secrets_yaml.data = @{}
 }
 
-$secrets_yaml.data.ESZOP_AZURE_STORAGE_CONN_STR = ConvertTo-Base64 -Text $apps_config.ESZOP_AZURE_STORAGE_CONN_STR
-$secrets_yaml.data.ESZOP_AZURE_EVENTBUS_CONN_STR = ConvertTo-Base64 -Text $apps_config.ESZOP_AZURE_EVENTBUS_CONN_STR
+$secrets_yaml.data.ESZOP_AZURE_STORAGE_CONN_STR = ConvertTo-Base64 -Text $apps_config.AZURE_STORAGE_CONN_STR
+$secrets_yaml.data.ESZOP_AZURE_EVENTBUS_CONN_STR = ConvertTo-Base64 -Text $apps_config.AZURE_EVENTBUS_CONN_STR
 
 $redis_conn_str = "$($apps_config.REDIS_ADDRESS):$($apps_config.REDIS_PORT),password=$($apps_config.REDIS_PASSWORD)"
 $secrets_yaml.data.ESZOP_REDIS_CONN_STR = ConvertTo-Base64 -Text $redis_conn_str
@@ -28,7 +28,7 @@ $secrets_yaml.data.ESZOP_REDIS_CONN_STR = ConvertTo-Base64 -Text $redis_conn_str
 $services = @("offers", "identity", "carts", "orders", "notification")
 foreach ($service in $services) {
   $service_name = $service.ToUpperInvariant()
-  $conn_str = $apps_config.ESZOP_SQLSERVER_CONN_STR_TEMPLATE `
+  $conn_str = $apps_config.SQLSERVER_CONN_STR_TEMPLATE `
     -replace "{env_prefix}", $CloudEnv `
     -replace "{service_name}", $service `
     -replace "{db_username}", $apps_config.SQLSERVER_USERNAME `

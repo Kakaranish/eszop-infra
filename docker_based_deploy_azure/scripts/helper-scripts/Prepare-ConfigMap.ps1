@@ -1,5 +1,5 @@
 param (
-    [string] $IngressExternalAddress
+  [string] $IngressExternalAddress
 )
 
 $config_path = "$PSScriptRoot\..\..\kubernetes\config-map.yaml"

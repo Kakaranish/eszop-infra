@@ -91,8 +91,9 @@ if ($LASTEXITCODE -ne 0) {
 # ---  Update AppsConfig  ------------------------------------------------------
 
 (Update-AppsConfigValue `
-    -Field "ESZOP_AZURE_EVENTBUS_CONN_STR" `
-    -Value "[PROVIDE VALUE]") | Out-Null
+    -CloudEnv $CloudEnv `
+    -Field "AZURE_EVENTBUS_CONN_STR" `
+    -Value "`"[PROVIDE VALUE]`"") | Out-Null
 
 # ---  Cleanup  ----------------------------------------------------------------
 

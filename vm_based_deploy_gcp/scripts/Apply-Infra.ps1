@@ -70,8 +70,8 @@ terraform `
   -var="sql_server_db_username=$($apps_config.SQLSERVER_USERNAME)" `
   -var="sql_server_db_password=$($apps_config.SQLSERVER_PASSWORD)" `
   -var="redis_db_password=$($apps_config.REDIS_PASSWORD)" `
-  -var="ESZOP_AZURE_EVENTBUS_CONN_STR=$($apps_config.ESZOP_AZURE_EVENTBUS_CONN_STR)" `
-  -var="ESZOP_AZURE_STORAGE_CONN_STR=$($apps_config.ESZOP_AZURE_STORAGE_CONN_STR)" `
+  -var="ESZOP_AZURE_EVENTBUS_CONN_STR=$($apps_config.AZURE_EVENTBUS_CONN_STR)" `
+  -var="ESZOP_AZURE_STORAGE_CONN_STR=$($apps_config.AZURE_STORAGE_CONN_STR)" `
 
 $cache_content = @{
   backend_image_name  = $BackendImageName;

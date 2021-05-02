@@ -84,7 +84,7 @@ $event_bus_conn_str = az servicebus namespace authorization-rule keys list `
 
 (Update-AppsConfigValue `
     -CloudEnv $CloudEnv `
-    -Field "ESZOP_AZURE_EVENTBUS_CONN_STR" `
+    -Field "AZURE_EVENTBUS_CONN_STR" `
     -Value $event_bus_conn_str) | Out-Null
 
 $output_filename = "cache.yaml"
