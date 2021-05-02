@@ -28,4 +28,5 @@ Write-Host "[INFO] Running in '$CloudEnv' terraform workspace" -ForegroundColor 
 terraform `
   -chdir="$tf_dir" `
   apply `
-  -var "project_id=$($infra_config.GCP_PROJECT_ID)"
+  -var "project_id=$($infra_config.GCP_PROJECT_ID)" `
+  -var "env_prefix=$CloudEnv"
