@@ -181,7 +181,3 @@ module "notification_sub" {
   service_name     = "notification"
   environment      = var.environment
 }
-
-output "service_bus_connection_string" {
-  value = azurerm_servicebus_namespace.service_bus.default_primary_connection_string
-}

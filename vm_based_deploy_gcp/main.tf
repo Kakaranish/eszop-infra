@@ -90,6 +90,8 @@ module "external_https_lb" {
 
 module "external_http_to_https_lb" {
   source = "./modules/external_http_to_https_lb"
+
+  ingress_ip_address = data.google_compute_global_address.external_lb_address.address
 }
 
 module "offers_mig" {

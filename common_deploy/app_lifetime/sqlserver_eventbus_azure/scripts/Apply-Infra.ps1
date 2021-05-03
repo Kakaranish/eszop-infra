@@ -99,7 +99,6 @@ $event_bus_conn_str = az servicebus namespace authorization-rule keys list `
   --query primaryConnectionString `
   -o tsv
 
-
 $infra_output = @{"AZURE_EVENTBUS_CONN_STR" = $event_bus_conn_str; }
 Update-InfraConfigOutput `
   -CloudEnv $CloudEnv `

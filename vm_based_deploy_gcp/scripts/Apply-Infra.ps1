@@ -74,6 +74,10 @@ terraform `
   -var="ESZOP_AZURE_EVENTBUS_CONN_STR=$($infra_output.AZURE_EVENTBUS_CONN_STR)" `
   -var="ESZOP_AZURE_STORAGE_CONN_STR=$($infra_output.AZURE_STORAGE_CONN_STR)" `
 
+if(-not(Test-Path "$PSScriptRoot\output")) {
+  New-Item -ItemType Directory -Path "$PSScriptRoot\output"
+}
+
 $cache_content = @{
   backend_image_name  = $BackendImageName;
   frontend_image_name = $FrontendImageName
