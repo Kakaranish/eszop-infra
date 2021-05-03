@@ -1,7 +1,8 @@
 locals {
-  global_resource_group = "eszop"
-  resource_group        = "eszop-${var.env_prefix}"
-  cluster_name          = "eszop-${var.env_prefix}-cluster"
+  global_resource_group    = "eszop"
+  resource_group           = "eszop-${var.env_prefix}"
+  cluster_name             = "eszop-${var.env_prefix}-cluster"
+  ingress_address_res_name = "eszop-${var.env_prefix}-ingress-ip"
 }
 
 # ---  Existing resources  -----------------------------------------------------
@@ -13,7 +14,7 @@ data "azurerm_container_registry" "container_registry" {
 
 data "azurerm_public_ip" "cluster_ip" {
   resource_group_name = local.resource_group
-  name                = var.cluster_address_res_name
+  name                = local.ingress_address_res_name
 }
 
 data "azurerm_user_assigned_identity" "managed_identity" {

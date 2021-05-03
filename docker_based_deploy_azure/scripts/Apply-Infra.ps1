@@ -11,12 +11,10 @@ param(
 $repo_root = "$PSScriptRoot\..\.."
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
-Import-Module "${repo_root}\scripts\Get-AppsConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
-$infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 $infra_global_config = Get-InfraConfig -CloudEnv "global"
 
 if ($Init.IsPresent) {
@@ -34,8 +32,7 @@ terraform ``
   -chdir="$tf_dir" ``
   apply ``
   -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)" ``
-  -var="env_prefix=$CloudEnv" ``
-  -var="cluster_address_res_name=$($infra_config.AZ_CLUSTER_INGRESS_ADDRESS_RES_NAME)"
+  -var="env_prefix=$CloudEnv"
 "@
 
 if ($AutoApprove.IsPresent) {

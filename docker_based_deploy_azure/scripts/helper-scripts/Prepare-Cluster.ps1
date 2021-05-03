@@ -28,7 +28,7 @@ helm repo update
 
 $ip_addr = az network public-ip show `
   --resource-group "eszop-$CloudEnv" `
-  --name $infra_config.AZ_CLUSTER_INGRESS_ADDRESS_RES_NAME `
+  --name "eszop-$CloudEnv-ingress-ip" `
   --query ipAddress `
   --output tsv
 
@@ -46,9 +46,10 @@ if ($UseSelfSignedCertificates.IsPresent) {
   -CloudEnv $CloudEnv `
   -IngressIpAddress $ip_addr
 
-$ingress_extenal_address = if ($domain_name) { $domain_name } else { $ip_addr }
+$domain_name = $infra_config.CONTAINER_BASED_DOMAIN_NAME
+$ingress_external_address = if ($domain_name) { $domain_name } else { $ip_addr }
 Invoke-Expression "$PSScriptRoot\Prepare-ConfigMap.ps1 ``
-  -IngressExternalAddress $ingress_extenal_address"
+  -IngressExternalAddress $ingress_external_address"
 
 . "$PSScriptRoot\Prepare-Secrets.ps1" -CloudEnv $CloudEnv
 

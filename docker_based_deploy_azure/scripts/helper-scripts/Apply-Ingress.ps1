@@ -13,8 +13,6 @@ Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
-$infra_config = Get-InfraConfig -CloudEnv $CloudEnv
-
 if ($IngressIpAddress) {
   Write-Host "[INFO] Using $IngressIpAddress as ingress external IP address" -ForegroundColor Green
     
