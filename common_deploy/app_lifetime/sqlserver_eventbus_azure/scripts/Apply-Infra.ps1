@@ -18,7 +18,6 @@ Import-Module "${repo_root}\scripts\Update-InfraConfigOutput.psm1" -Force
 # ------------------------------------------------------------------------------
 
 $apps_config = Get-AppsConfig -CloudEnv $CloudEnv
-$infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 $infra_global_config = Get-InfraConfig -CloudEnv "global"
 
 if (-not($BackupSuffix) -and -not($UsePreviousBackupSuffix.IsPresent)) {
@@ -77,8 +76,8 @@ else {
     -var="sql_sa_password=$($apps_config.SQLSERVER_PASSWORD)" ``
     -var="environment=$CloudEnv" ``
     -var="allowed_ip=$my_ip" ``
-    -var="backups_container_uri=$($infra_global_config.AZ_BACKUPS_CONTAINER_URI)" ``
-    -var="import_suffix=${backup_suffix}"
+    -var="import_suffix=${backup_suffix}" ``
+    -var="global_storage_name=$($infra_global_config.AZ_STORAGE_NAME)"
 "@
 }
 
@@ -94,8 +93,8 @@ if ($LASTEXITCODE -ne 0) {
 # ---  Update AppsConfig  ------------------------------------------------------
 
 $event_bus_conn_str = az servicebus namespace authorization-rule keys list `
-  --resource-group $infra_config.AZ_RESOURCE_GROUP `
-  --namespace-name "$($infra_config.AZ_RESOURCE_GROUP)-event-bus" `
+  --resource-group "eszop" `
+  --namespace-name "eszop-$CloudEnv-event-bus" `
   --name RootManageSharedAccessKey `
   --query primaryConnectionString `
   -o tsv

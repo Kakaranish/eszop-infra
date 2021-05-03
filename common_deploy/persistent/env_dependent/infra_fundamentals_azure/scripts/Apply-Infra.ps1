@@ -31,7 +31,8 @@ terraform ``
   -chdir="$tf_dir" ``
   apply ``
   -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)" ``
-  -var="env_prefix=$CloudEnv"
+  -var="env_prefix=$CloudEnv" ``
+  -var="global_storage_name=$($infra_global_config.AZ_STORAGE_NAME)"
 "@
 
 if ($AutoApprove.IsPresent) {

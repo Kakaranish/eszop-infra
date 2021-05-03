@@ -11,3 +11,7 @@ variable "location" {
   type    = string
   default = "Germany West Central"
 }
+
+variable "storage_name" {
+  type = string
+}

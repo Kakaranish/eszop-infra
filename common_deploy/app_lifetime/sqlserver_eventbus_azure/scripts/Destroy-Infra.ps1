@@ -74,7 +74,7 @@ else {
     -var="sql_sa_password=$($apps_config.SQLSERVER_PASSWORD)" ``
     -var="environment=$CloudEnv" ``
     -var="allowed_ip=$my_ip" ``
-    -var="backups_container_uri=$($infra_global_config.AZ_BACKUPS_CONTAINER_URI)" ``
+    -var="global_storage_name=$($infra_global_config.AZ_STORAGE_NAME)" ``
     -var="import_suffix=${backup_suffix}"
 "@
 }

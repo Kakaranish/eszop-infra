@@ -21,7 +21,8 @@ $apply_command = @"
 terraform ``
   -chdir="$tf_dir" ``
   apply ``
-  -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)"
+  -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)" ``
+  -var="storage_name=$($infra_global_config.AZ_STORAGE_NAME)"
 "@
 
 if ($AutoApprove.IsPresent) {
@@ -51,7 +52,7 @@ if ($LASTEXITCODE -eq 0) {
 
   $conn_str = az storage account show-connection-string `
     --resource-group "eszop" `
-    --name "eszopstorage" `
+    --name $infra_global_config.AZ_STORAGE_NAME `
     --query "connectionString" `
     -o tsv
   $storage_info = @{ "ConnectionString" = $conn_str; }

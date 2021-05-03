@@ -24,7 +24,7 @@ if ($IngressIpAddress) {
       --set controller.replicaCount=2 `
       --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux `
       --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux `
-      --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$($infra_config.AZ_RESOURCE_GROUP)" `
+      --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="eszop-$CloudEnv" `
       --set controller.service.loadBalancerIP="$IngressIpAddress") | Out-Null
   
   kubectl delete -A ValidatingWebhookConfiguration nginx-ingress-ingress-nginx-admission

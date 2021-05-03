@@ -15,4 +15,5 @@ module "storage" {
 
   resource_group = azurerm_resource_group.resource_group.name
   location       = var.location
+  storage_name   = var.storage_name
 }

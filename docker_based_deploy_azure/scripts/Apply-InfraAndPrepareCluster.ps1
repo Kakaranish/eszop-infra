@@ -12,7 +12,6 @@ Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 
 # ------------------------------------------------------------------------------
 
-$infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 $infra_global_config = Get-InfraConfig -CloudEnv "global"
 
 & "$PSScriptRoot\Apply-Infra.ps1" `
@@ -22,8 +21,8 @@ $infra_global_config = Get-InfraConfig -CloudEnv "global"
 
 az account set --subscription $infra_global_config.AZ_SUBSCRIPTION_ID
 az aks get-credentials `
-  --resource-group $infra_config.AZ_RESOURCE_GROUP `
-  --name "$($infra_config.AZ_RESOURCE_GROUP)-cluster" `
+  --resource-group "eszop-$CloudEnv" `
+  --name "eszop-$CloudEnv-cluster" `
   --overwrite-existing
 
 $params = @{}

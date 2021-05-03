@@ -24,10 +24,15 @@ variable "sql_sa_password" {
   sensitive = true
 }
 
-variable "import_suffix" {
+variable "global_storage_name" {
   type = string
 }
 
-variable "backups_container_uri" {
+variable "backups_container_name" {
+  type    = string
+  default = "eszop-db-backups"
+}
+
+variable "import_suffix" {
   type = string
 }

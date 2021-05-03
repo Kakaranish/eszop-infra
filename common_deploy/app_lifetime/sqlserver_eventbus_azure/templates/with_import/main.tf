@@ -1,12 +1,12 @@
 locals {
   resource_group        = "eszop-${var.environment}"
   sql_server_name       = "eszop-${var.environment}-sqlserver"
-  storage_account_name  = "eszopstorage"
   global_resource_group = "eszop"
+  backups_container_uri = "https://${var.global_storage_name}.blob.core.windows.net/${var.backups_container_name}"
 }
 
 data "azurerm_storage_account" "storage_account" {
-  name                = local.storage_account_name
+  name                = var.global_storage_name
   resource_group_name = local.global_resource_group
 }
 
@@ -36,7 +36,7 @@ module "offers_db" {
 
   sql_sa_login          = var.sql_sa_login
   sql_sa_password       = var.sql_sa_password
-  backups_container_uri = var.backups_container_uri
+  backups_container_uri = local.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
@@ -54,7 +54,7 @@ module "identity_db" {
 
   sql_sa_login          = var.sql_sa_login
   sql_sa_password       = var.sql_sa_password
-  backups_container_uri = var.backups_container_uri
+  backups_container_uri = local.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
@@ -72,7 +72,7 @@ module "carts_db" {
 
   sql_sa_login          = var.sql_sa_login
   sql_sa_password       = var.sql_sa_password
-  backups_container_uri = var.backups_container_uri
+  backups_container_uri = local.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
@@ -90,7 +90,7 @@ module "orders_db" {
 
   sql_sa_login          = var.sql_sa_login
   sql_sa_password       = var.sql_sa_password
-  backups_container_uri = var.backups_container_uri
+  backups_container_uri = local.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }
@@ -108,7 +108,7 @@ module "notification_db" {
 
   sql_sa_login          = var.sql_sa_login
   sql_sa_password       = var.sql_sa_password
-  backups_container_uri = var.backups_container_uri
+  backups_container_uri = local.backups_container_uri
   storage_key           = data.azurerm_storage_account.storage_account.primary_access_key
   import_suffix         = var.import_suffix
 }

@@ -18,8 +18,8 @@ $infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 
 az account set --subscription $infra_global_config.AZ_SUBSCRIPTION_ID
 az aks get-credentials `
-  --resource-group $infra_config.AZ_RESOURCE_GROUP `
-  --name "$($infra_config.AZ_RESOURCE_GROUP)-cluster" `
+  --resource-group "eszop-$CloudEnv" `
+  --name "eszop-$CloudEnv-cluster" `
   --overwrite-existing
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -27,7 +27,7 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 $ip_addr = az network public-ip show `
-  --resource-group $infra_config.AZ_RESOURCE_GROUP `
+  --resource-group "eszop-$CloudEnv" `
   --name $infra_config.AZ_CLUSTER_INGRESS_ADDRESS_RES_NAME `
   --query ipAddress `
   --output tsv

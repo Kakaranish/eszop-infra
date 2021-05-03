@@ -1,1 +1,0 @@
-global_storage_name = "eszopstorage"
