@@ -54,7 +54,7 @@ else {
     $backup_suffix = $BackupSuffix
   }
   else {
-    $cache_path = "$PSScriptRoot\output\cache.yaml"
+    $cache_path = "$PSScriptRoot\output\${CloudEnv}_cache.yaml"
     if (-not(Test-Path $cache_path) ) {
       Write-Error "Cannot read cached backup suffix" -ErrorAction Stop
     }

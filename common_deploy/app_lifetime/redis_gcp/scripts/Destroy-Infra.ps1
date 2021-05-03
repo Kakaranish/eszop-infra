@@ -33,7 +33,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "[INFO] Running in '$CloudEnv' terraform workspace" -ForegroundColor Green
 
 if ($UsePreviousImageName.IsPresent) {
-  $cache_yaml = Get-Content -Path "$PSScriptRoot\output\cache.yaml" | ConvertFrom-Yaml
+  $cache_yaml = Get-Content -Path "$PSScriptRoot\output\${CloudEnv}_cache.yaml" | ConvertFrom-Yaml
   $image_name_to_apply = $cache_yaml.ImageName
 }
 else {

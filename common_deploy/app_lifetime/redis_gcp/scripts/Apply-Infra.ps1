@@ -35,7 +35,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "[INFO] Running in '$CloudEnv' terraform workspace" -ForegroundColor Green
 
 if ($UsePreviousImageName.IsPresent) {
-  $cache_yaml = Get-Content -Path "$PSScriptRoot\output\cache.yaml" | ConvertFrom-Yaml
+  $cache_yaml = Get-Content -Path "$PSScriptRoot\output\${CloudEnv}_cache.yaml" | ConvertFrom-Yaml
   $image_name_to_apply = $cache_yaml.ImageName
 }
 else {
@@ -53,8 +53,8 @@ terraform `
 
 if ($LASTEXITCODE -eq 0) {
   $cache_info = @{"ImageName" = $image_name_to_apply }
-  New-Item -ItemType File -Path "$PSScriptRoot\output\cache.yaml" -Force | Out-Null
-  $cache_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\cache.yaml" -NoNewline
+  New-Item -ItemType File -Path "$PSScriptRoot\output\${CloudEnv}_cache.yaml" -Force | Out-Null
+  $cache_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${CloudEnv}_cache.yaml" -NoNewline
 
   # zone same as in variables.tf
   $instance_info = (gcloud compute instances describe `

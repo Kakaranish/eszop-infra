@@ -40,18 +40,3 @@ if ($AutoApprove.IsPresent) {
 }
 
 Invoke-Expression $apply_command
-
-if ($LASTEXITCODE -eq 0) {
-  if (-not(Test-Path "$PSScriptRoot\output")) {
-    New-Item -ItemType Directory -Name "output" | Out-Null
-  }
-
-  $ingress_ip = az network public-ip show `
-    --resource-group "eszop-$CloudEnv" `
-    --name "eszop-$CloudEnv-ingress-ip" `
-    --query ipAddress `
-    -o tsv
-  $networking_info = @{ "IngressIp" = $ingress_ip }
-
-  $networking_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${CloudEnv}_networking.yaml" -NoNewline
-}

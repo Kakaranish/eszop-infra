@@ -56,7 +56,7 @@ else {
     $backup_suffix = $BackupSuffix
   }
   else {
-    $cache_path = "$PSScriptRoot\output\cache.yaml"
+    $cache_path = "$PSScriptRoot\output\${CloudEnv}_cache.yaml"
     if (-not(Test-Path $cache_path) ) {
       Write-Error "Cannot read cached backup suffix" -ErrorAction Stop
     }
@@ -107,11 +107,8 @@ Update-InfraConfigOutput `
 if (-not(Test-Path -Path "$PSScriptRoot\output")) {
   New-Item -ItemType Directory "output" | Out-Null
 }
-$cache_info = @{ 
-  "LastBackupSuffix"         = $backup_suffix;
-  "EventBusConnectionString" = $event_bus_conn_str
-}
-$cache_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\cache.yaml" -NoNewline
+$cache_info = @{ "LastBackupSuffix" = $backup_suffix; }
+$cache_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${CloudEnv}_cache.yaml" -NoNewline
 
 # ---  Cleanup  ----------------------------------------------------------------
 
