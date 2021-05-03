@@ -13,6 +13,7 @@ module "networking" {
 
   resource_group = local.resource_group
   location       = var.location
+  env_prefix     = var.env_prefix
 }
 
 module "storage_container" {

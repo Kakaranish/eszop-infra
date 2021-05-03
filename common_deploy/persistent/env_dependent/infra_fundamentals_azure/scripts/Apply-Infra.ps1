@@ -46,12 +46,12 @@ if ($LASTEXITCODE -eq 0) {
     New-Item -ItemType Directory -Name "output" | Out-Null
   }
 
-  $ip_addr = az network public-ip show `
-    --resource-group eszop-staging `
-    --name eszop-public `
+  $ingress_ip = az network public-ip show `
+    --resource-group "eszop-$CloudEnv" `
+    --name "eszop-$CloudEnv-ingress-ip" `
     --query ipAddress `
     -o tsv
-  $networking_info = @{ "ReservedIpAddress" = $ip_addr }
+  $networking_info = @{ "IngressIp" = $ingress_ip }
 
   $networking_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${CloudEnv}_networking.yaml" -NoNewline
 }

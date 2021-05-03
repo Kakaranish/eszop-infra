@@ -6,7 +6,7 @@ provider "google" {
 data "google_compute_address" "redis_db_address" {
   project = var.project_id
   region  = var.region
-  name    = "redis-${var.env_prefix}-ip"
+  name    = "eszop-${var.env_prefix}-redis-ip"
 }
 
 data "google_compute_network" "vpc" {

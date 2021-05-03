@@ -10,7 +10,12 @@ data "google_compute_network" "vpc" {
 resource "google_compute_address" "redis_address" {
   region       = var.region
   address_type = "EXTERNAL"
-  name         = "redis-${var.env_prefix}-ip"
+  name         = "eszop-${var.env_prefix}-redis-ip"
+}
+
+resource "google_compute_global_address" "ingress_address" {
+  address_type = "EXTERNAL"
+  name         = "eszop-${var.env_prefix}-ingress-ip"
 }
 
 resource "google_compute_firewall" "firewall" {

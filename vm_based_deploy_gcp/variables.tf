@@ -27,10 +27,6 @@ variable "frontend_image_name" {
   type = string
 }
 
-variable "ingress_address_name" {
-  type = string
-}
-
 variable "domain_name" {
   type = string
 }

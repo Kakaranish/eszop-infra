@@ -93,7 +93,7 @@ if ($LASTEXITCODE -ne 0) {
 # ---  Update AppsConfig  ------------------------------------------------------
 
 $event_bus_conn_str = az servicebus namespace authorization-rule keys list `
-  --resource-group "eszop" `
+  --resource-group "eszop-$CloudEnv" `
   --namespace-name "eszop-$CloudEnv-event-bus" `
   --name RootManageSharedAccessKey `
   --query primaryConnectionString `

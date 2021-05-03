@@ -66,7 +66,6 @@ terraform `
   -var="environment_prefix=$CloudEnv" `
   -var="backend_image_name=$BackendImageName" `
   -var="frontend_image_name=$FrontendImageName" `
-  -var="ingress_address_name=$($infra_config.GCP_INGRESS_ADDRESS_RES_NAME)" `
   -var="redis_address_ip=$($infra_output.REDIS_ADDRESS)" `
   -var="domain_name=$($infra_config.VM_BASED_DOMAIN_NAME)" `
   -var="sql_server_db_username=$($apps_config.SQLSERVER_USERNAME)" `

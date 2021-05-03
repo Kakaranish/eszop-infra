@@ -3,13 +3,14 @@ provider "google" {
   region  = var.region
 }
 
-data "google_compute_global_address" "external_lb_address" {
-  name = var.ingress_address_name
-}
-
 locals {
   ESZOP_SQLSERVER_CONN_STR_TEMPLATE = "Server=tcp:eszop-${var.environment_prefix}-sqlserver.database.windows.net,1433;Initial Catalog=eszop-${var.environment_prefix}-{service_name}-db;Persist Security Info=False;User ID=${var.sql_server_db_username};Password=${var.sql_server_db_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   ESZOP_REDIS_CONN_STR              = "${var.redis_address_ip}:6379,password=${var.redis_db_password}"
+  ingress_address_res_name          = "eszop-${var.environment_prefix}-ingress-ip"
+}
+
+data "google_compute_global_address" "external_lb_address" {
+  name = local.ingress_address_res_name
 }
 
 module "cloud_router" {
