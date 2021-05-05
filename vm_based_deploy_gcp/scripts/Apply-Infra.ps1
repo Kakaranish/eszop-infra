@@ -19,9 +19,9 @@ Import-Module "${repo_root}\scripts\Get-InfraConfigOutput.psm1" -Force
 # ------------------------------------------------------------------------------
 
 $env_prefix_map = @{
-  "dev"     = "Staging";
-  "staging" = "Staging";
-  "prod"    = "Production"
+  "dev"     = "StagingVm";
+  "staging" = "StagingVm";
+  "prod"    = "ProductionVm"
 }
 
 $apps_config = Get-AppsConfig -CloudEnv $CloudEnv
