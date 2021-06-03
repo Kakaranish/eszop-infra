@@ -56,7 +56,7 @@ module "gateway_mig" {
   project_id            = var.project_id
   global_project_id     = var.global_project_id
   region                = var.region
-  image_name            = var.backend_image_name
+  image_name            = var.gateway_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "gateway"
   min_replicas          = var.min_replicas
@@ -100,7 +100,7 @@ module "offers_mig" {
   project_id            = var.project_id
   global_project_id     = var.global_project_id
   region                = var.region
-  image_name            = var.backend_image_name
+  image_name            = var.offers_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "offers"
   min_replicas          = var.min_replicas
@@ -126,7 +126,7 @@ module "identity_mig" {
   project_id            = var.project_id
   global_project_id     = var.global_project_id
   region                = var.region
-  image_name            = var.backend_image_name
+  image_name            = var.identity_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "identity"
   min_replicas          = var.min_replicas
@@ -152,7 +152,7 @@ module "carts_mig" {
   project_id            = var.project_id
   global_project_id     = var.global_project_id
   region                = var.region
-  image_name            = var.backend_image_name
+  image_name            = var.carts_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "carts"
   min_replicas          = var.min_replicas
@@ -177,7 +177,7 @@ module "orders_mig" {
   project_id            = var.project_id
   global_project_id     = var.global_project_id
   region                = var.region
-  image_name            = var.backend_image_name
+  image_name            = var.orders_image_name
   service_account_email = google_service_account.service_account.email
   service_name          = "orders"
   min_replicas          = var.min_replicas
@@ -202,7 +202,7 @@ module "notification_service_mig" {
   project_id              = var.project_id
   global_project_id       = var.global_project_id
   region                  = var.region
-  image_name              = var.backend_image_name
+  image_name              = var.notification_image_name
   service_account_email   = google_service_account.service_account.email
   service_name            = "notification-service"
   min_replicas            = var.min_replicas

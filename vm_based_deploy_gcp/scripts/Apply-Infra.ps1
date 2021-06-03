@@ -3,20 +3,25 @@ param(
   [ValidateSet("dev", "staging", "prod")] 
   [string] $CloudEnv,
 
-  [string] $BackendImageName,
-  [string] $FrontendImageName,
-  [switch] $Init,
-  [switch] $UsePreviousImages
+  [switch] $Init
 )
 
 $repo_root = "$PSScriptRoot\..\.."
 $tf_dir = Resolve-Path "$PSScriptRoot\.."
 
+Import-Module "$PSScriptRoot\Config.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-AppsConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfig.psm1" -Force
 Import-Module "${repo_root}\scripts\Get-InfraConfigOutput.psm1" -Force
 
 # ------------------------------------------------------------------------------
+
+if (-not $gateway_image_name -or -not $offers_image_name -or -not $identity_image_name `
+    -or -not $carts_image_name -or -not $orders_image_name -or -not $notification_image_name `
+    -or -not $frontend_image_name) {
+  Write-Host "[ERROR] Fill Config.psm1 before applying infra" -ForegroundColor Red
+  Exit
+}
 
 $env_prefix_map = @{
   "dev"     = "StagingVm";
@@ -29,23 +34,7 @@ $infra_global_config = Get-InfraConfig -CloudEnv "global"
 $infra_config = Get-InfraConfig -CloudEnv $CloudEnv
 $infra_output = Get-InfraConfigOutput -CloudEnv $CloudEnv
 
-if ($UsePreviousImages.IsPresent) {
-  $cache_yaml = Get-Content -Path "$PSScriptRoot\output\${CloudEnv}_cache.yaml" | ConvertFrom-Yaml
-  $BackendImageName = $cache_yaml.backend_image_name
-  $FrontendImageName = $cache_yaml.frontend_image_name
-}
-
-if (-not($BackendImageName)) {
-  Write-Error "BackendImageName cannot be empty" -ErrorAction Stop
-}
-if (-not($FrontendImageName)) {
-  Write-Error "FrontendImageName cannot be empty" -ErrorAction Stop
-}
-
-Write-Host "[INFO] Running with params:" -ForegroundColor Green
 Write-Host "[INFO] Environment: $CloudEnv" -ForegroundColor Green
-Write-Host "[INFO] BackendImageName: $BackendImageName" -ForegroundColor Green
-Write-Host "[INFO] FrontendImageName: $FrontendImageName" -ForegroundColor Green
 
 if ($Init.IsPresent) {
   terraform -chdir="$tf_dir" init
@@ -64,22 +53,17 @@ terraform `
   -var="global_project_id=$($infra_global_config.GCP_PROJECT_ID)" `
   -var="environment=$($env_prefix_map[$CloudEnv])" `
   -var="environment_prefix=$CloudEnv" `
-  -var="backend_image_name=$BackendImageName" `
-  -var="frontend_image_name=$FrontendImageName" `
+  -var="gateway_image_name=${gateway_image_name}" `
+  -var="offers_image_name=${offers_image_name}" `
+  -var="identity_image_name=${identity_image_name}" `
+  -var="carts_image_name=${carts_image_name}" `
+  -var="orders_image_name=${orders_image_name}" `
+  -var="notification_image_name=${notification_image_name}" `
+  -var="frontend_image_name=${frontend_image_name}" `
   -var="redis_address_ip=$($infra_output.REDIS_ADDRESS)" `
   -var="domain_name=$($infra_config.VM_BASED_DOMAIN_NAME)" `
   -var="sql_server_db_username=$($apps_config.SQLSERVER_USERNAME)" `
   -var="sql_server_db_password=$($apps_config.SQLSERVER_PASSWORD)" `
   -var="redis_db_password=$($apps_config.REDIS_PASSWORD)" `
   -var="ESZOP_AZURE_EVENTBUS_CONN_STR=$($infra_output.AZURE_EVENTBUS_CONN_STR)" `
-  -var="ESZOP_AZURE_STORAGE_CONN_STR=$($infra_output.AZURE_STORAGE_CONN_STR)" `
-
-if(-not(Test-Path "$PSScriptRoot\output")) {
-  New-Item -ItemType Directory -Path "$PSScriptRoot\output"
-}
-
-$cache_content = @{
-  backend_image_name  = $BackendImageName;
-  frontend_image_name = $FrontendImageName
-}
-$cache_content | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${CloudEnv}_cache.yaml" -NoNewline
+  -var="ESZOP_AZURE_STORAGE_CONN_STR=$($infra_output.AZURE_STORAGE_CONN_STR)"

@@ -19,7 +19,27 @@ variable "environment_prefix" {
   type = string
 }
 
-variable "backend_image_name" {
+variable "gateway_image_name" {
+  type = string
+}
+
+variable "offers_image_name" {
+  type = string
+}
+
+variable "identity_image_name" {
+  type = string
+}
+
+variable "carts_image_name" {
+  type = string
+}
+
+variable "orders_image_name" {
+  type = string
+}
+
+variable "notification_image_name" {
   type = string
 }
 
