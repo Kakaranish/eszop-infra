@@ -20,7 +20,7 @@ Import-Module "${repo_root}\scripts\Update-InfraConfigOutput.psm1" -Force
 $apps_config = Get-AppsConfig -CloudEnv $CloudEnv
 $infra_global_config = Get-InfraConfig -CloudEnv "global"
 
-if (-not($UsePreviousBackupSuffix.IsPresent) -and -not($BackupSuffix)) {
+if (-not($BackupSuffix) -and -not($UsePreviousBackupSuffix.IsPresent)) {
   Get-ChildItem -Path "$PSScriptRoot\..\templates\basic" | Copy-Item -Destination $tf_dir
 }
 else {
@@ -37,16 +37,18 @@ Write-Host "[INFO] Running in '$CloudEnv' terraform workspace" -ForegroundColor 
 
 $my_ip = (Invoke-WebRequest ipinfo.io/ip).Content.Trim()
 
+$backup_suffix = $null
+
 if (-not($UsePreviousBackupSuffix.IsPresent) -and -not($BackupSuffix)) {
   $apply_command = @"
   terraform ``
     -chdir="$tf_dir" ``
-    destroy ``
+    apply ``
     -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)" ``
     -var="sql_sa_login=$($apps_config.SQLSERVER_USERNAME)" ``
     -var="sql_sa_password=$($apps_config.SQLSERVER_PASSWORD)" ``
     -var="environment=$CloudEnv" ``
-    -var="allowed_ip=$my_ip"
+    -var="allowed_ip=${my_ip}"
 "@
 }
 else {
@@ -64,18 +66,18 @@ else {
       Write-Error "Cannot read cached backup suffix" -ErrorAction Stop
     }
   }
-
+  
   $apply_command = @"
   terraform ``
     -chdir="$tf_dir" ``
-    destroy ``
+    apply ``
     -var="subscription_id=$($infra_global_config.AZ_SUBSCRIPTION_ID)" ``
     -var="sql_sa_login=$($apps_config.SQLSERVER_USERNAME)" ``
     -var="sql_sa_password=$($apps_config.SQLSERVER_PASSWORD)" ``
     -var="environment=$CloudEnv" ``
     -var="allowed_ip=$my_ip" ``
-    -var="global_storage_name=$($infra_global_config.AZ_STORAGE_NAME)" ``
-    -var="import_suffix=${backup_suffix}"
+    -var="import_suffix=${backup_suffix}" ``
+    -var="global_storage_name=$($infra_global_config.AZ_STORAGE_NAME)"
 "@
 }
 
@@ -90,10 +92,11 @@ if ($LASTEXITCODE -ne 0) {
 
 # ---  Update AppsConfig  ------------------------------------------------------
 
-$infra_output = @{"AZURE_EVENTBUS_CONN_STR" = "NEEDS_TO_BE_GENERATED" }
-Update-InfraConfigOutput `
-  -CloudEnv $CloudEnv `
-  -Entries $infra_output
+if (-not(Test-Path -Path "$PSScriptRoot\output")) {
+  New-Item -ItemType Directory "output" | Out-Null
+}
+$cache_info = @{ "LastBackupSuffix" = $backup_suffix; }
+$cache_info | ConvertTo-Yaml | Set-Content "$PSScriptRoot\output\${CloudEnv}_cache.yaml" -NoNewline
 
 # ---  Cleanup  ----------------------------------------------------------------
 
